@@ -43,34 +43,7 @@ Sistema de gerenciamento de documentos (orçamentos, recibos e contratos) para a
 - Visual Studio 2024 ou VS Code
 - Git
 
-### Passos
 
-1. **Clone o repositório**
-```bash
-git clone https://github.com/LeonardoLibanori/SistemaLitoralPolimentos.git
-cd SistemaLitoralPolimentos
-```
-
-2. **Restaure as dependências**
-```bash
-dotnet restore
-```
-
-3. **Execute a aplicação**
-```bash
-dotnet run
-```
-
-4. **Acesse no navegador**
-```
-https://localhost:5001
-```
-
-## 🔑 Credenciais de Acesso
-
-**Senha**: `Leo1212`
-
-> ⚠️ **Nota**: A senha está armazenada no backend (`Program.cs` / `HomeController.cs`) e não é visível no código-fonte público.
 
 ## 📁 Estrutura do Projeto
 
@@ -152,4 +125,4 @@ Este projeto é privado para uso interno da Litoral Polimentos.
 
 **Desenvolvido com ❤️ para Litoral Polimentos**
 
-Última atualização: 2024
+Última atualização: 2026
