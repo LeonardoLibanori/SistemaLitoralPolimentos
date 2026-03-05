@@ -1,0 +1,227 @@
+﻿<!-- CONTRATO -->
+
+<div id="paginaContrato" style="display:none">
+    <div class="caixa">
+        <div class="titulo-principal">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
+
+        <!-- TIPO DE CONTRATANTE -->
+        <label>Tipo de Contratante:</label>
+        <select id="c_tipo_contratante" onchange="alterarTipoContratante()">
+            <option value="condominio">Condomínio</option>
+            <option value="pessoa">Pessoa Física</option>
+            <option value="empresa">Empresa</option>
+        </select>
+
+        <!-- CONDOMÍNIO -->
+        <div id="secaoCondominio" style="display: block; border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+            <label><strong>Dados do Condomínio</strong></label>
+
+            <label>Nome do Condomínio:</label>
+            <input id="c_cond_nome" placeholder="Ex: Condomínio Edifício Parati">
+
+            <label>CNPJ:</label>
+            <input id="c_cond_cnpj" placeholder="XX.XXX.XXX/XXXX-XX" maxlength="18" oninput="mascararDocumentoContrato('c_cond_cnpj')">
+
+            <label>Endereço:</label>
+            <input id="c_cond_rua" placeholder="Rua/Avenida">
+
+            <label>Número:</label>
+            <input id="c_cond_numero" placeholder="Número">
+
+            <label>Bairro:</label>
+            <input id="c_cond_bairro" placeholder="Bairro">
+
+            <label>Cidade/UF:</label>
+            <input id="c_cond_cidade" placeholder="Cidade/UF">
+
+            <label>CEP:</label>
+            <input id="c_cond_cep" placeholder="XXXXX-XXX">
+
+            <!-- SÍNDICO -->
+            <div style="margin-top: 15px;">
+                <label>
+                    <input type="checkbox" id="c_tem_sindico" onchange="alterarCamposSindico()"> 
+                    <strong>Tem Síndico</strong>
+                </label>
+                <div id="camposSindico" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 3px; margin-top: 10px;">
+                    <label>Nome do Síndico:</label>
+                    <input id="c_sindico_nome" placeholder="Nome do síndico">
+
+                    <label>CPF do Síndico:</label>
+                    <input id="c_sindico_cpf" placeholder="XXX.XXX.XXX-XX" maxlength="14" oninput="mascararDocumentoContrato('c_sindico_cpf')">
+                </div>
+            </div>
+
+            <!-- SUBSÍNDICO -->
+            <div style="margin-top: 15px;">
+                <label>
+                    <input type="checkbox" id="c_tem_subsindico" onchange="alterarCamposSubsindico()"> 
+                    <strong>Tem Subsíndico</strong>
+                </label>
+                <div id="camposSubsindico" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 3px; margin-top: 10px;">
+                    <label>Nome do Subsíndico:</label>
+                    <input id="c_subsindico_nome" placeholder="Nome do subsíndico">
+
+                    <label>CPF do Subsíndico:</label>
+                    <input id="c_subsindico_cpf" placeholder="XXX.XXX.XXX-XX" maxlength="14" oninput="mascararDocumentoContrato('c_subsindico_cpf')">
+                </div>
+            </div>
+
+            <!-- CONSELHEIROS/TESTEMUNHAS -->
+            <div style="margin-top: 15px;">
+                <label>
+                    <input type="checkbox" id="c_tem_conselheiros" onchange="alterarCamposConselheiros()"> 
+                    <strong>Tem Conselheiros/Testemunhas</strong>
+                </label>
+                <div id="camposConselheiros" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 3px; margin-top: 10px;">
+                    <label>Conselheiro 1:</label>
+                    <input id="c_conselheiro1_nome" placeholder="Nome">
+                    <input id="c_conselheiro1_cpf" placeholder="CPF" maxlength="14" oninput="mascararDocumentoContrato('c_conselheiro1_cpf')">
+
+                    <label style="margin-top: 10px;">Conselheiro 2:</label>
+                    <input id="c_conselheiro2_nome" placeholder="Nome">
+                    <input id="c_conselheiro2_cpf" placeholder="CPF" maxlength="14" oninput="mascararDocumentoContrato('c_conselheiro2_cpf')">
+
+                    <label style="margin-top: 10px;">Conselheiro 3:</label>
+                    <input id="c_conselheiro3_nome" placeholder="Nome">
+                    <input id="c_conselheiro3_cpf" placeholder="CPF" maxlength="14" oninput="mascararDocumentoContrato('c_conselheiro3_cpf')">
+                </div>
+            </div>
+        </div>
+
+        <!-- PESSOA/EMPRESA -->
+        <div id="secaoPessoaEmpresa" style="display: none; border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+            <label><strong>Dados do Contratante</strong></label>
+
+            <label>Nome:</label>
+            <input id="c_nome" placeholder="Digite o nome">
+
+            <label>Tipo de Documento:</label>
+            <select id="c_tipo_doc" onchange="atualizarLabelContrato()">
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+            </select>
+
+            <label id="c_label_doc">CPF:</label>
+            <input id="c_doc" placeholder="Digite o documento" maxlength="16" oninput="mascararDocumentoContrato()">
+
+            <label>Endereço:</label>
+            <input id="c_endereco" placeholder="Rua/Avenida">
+
+            <label>Número:</label>
+            <input id="c_numero" placeholder="Número">
+
+            <label>Bairro:</label>
+            <input id="c_bairro" placeholder="Bairro">
+
+            <label>Cidade/UF:</label>
+            <input id="c_cidade" placeholder="Cidade/UF">
+
+            <label>CEP:</label>
+            <input id="c_cep" placeholder="XXXXX-XXX" maxlength="9" oninput="mascararCEP('c_cep')">
+
+            <label>Representante:</label>
+            <input id="c_representante" placeholder="Nome do representante">
+
+            <label>RG do Representante:</label>
+            <input id="c_rg" placeholder="Digite o RG">
+
+            <label>CPF do Representante:</label>
+            <input id="c_cpf_representante" placeholder="XXX.XXX.XXX-XX" maxlength="14" oninput="mascararDocumentoContrato('c_cpf_representante')">
+        </div>
+
+        <!-- SERVIÇOS (Dinâmico) -->
+        <div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+            <label><strong>Serviços Contratados</strong></label>
+            <div id="servicosContainer">
+                <div class="servico-item" style="margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 3px;">
+                    <label>Serviço 1:</label>
+                    <textarea class="c_servico" placeholder="Descreva o serviço"></textarea>
+                    <button type="button" onclick="removerServico(this)" class="btn btn-danger" style="margin-top: 5px; padding: 5px 10px; font-size: 12px;">Remover</button>
+                </div>
+            </div>
+            <button type="button" onclick="adicionarServico()" class="btn btn-secondary" style="margin-top: 10px; padding: 8px 15px;">+ Adicionar Serviço</button>
+        </div>
+
+        <!-- VALOR E PAGAMENTO -->
+        <label><strong>Valor do Contrato (R$):</strong></label>
+        <input id="c_valor" placeholder="R$ 0,00">
+
+        <label>Condições de Pagamento:</label>
+        <input id="c_forma_pagamento" placeholder="Ex: Três parcelas, mediante transferência PIX ou bancária">
+
+        <label>Prazo de Execução (dias):</label>
+        <input id="c_prazo" placeholder="Número de dias" type="number">
+
+        <label>Cronograma de Execução:</label>
+        <textarea id="c_execucao" placeholder="Descreva o cronograma"></textarea>
+
+        <!-- ASSINANTE -->
+        <label><strong>Quem irá assinar o contrato?</strong></label>
+        <input id="c_signatario" placeholder="Nome completo de quem irá assinar" maxlength="100">
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+        <button id="btnContratoPdf" class="btn btn-primary-custom" style="width: 150px;">📄 PDF</button>
+        <button id="btnShareContrato" class="btn btn-share" style="display:none; width: 150px;">📤 Compartilhar</button>
+        <button class="btn btn-voltar" onclick="voltarMenu()" style="width: 150px;">Voltar</button>
+    </div>
+</div>
+
+<script>
+// Funções para alternar campos do contrato
+function alterarTipoContratante() {
+    const tipo = document.getElementById('c_tipo_contratante').value;
+    const secaoCondominio = document.getElementById('secaoCondominio');
+    const secaoPessoaEmpresa = document.getElementById('secaoPessoaEmpresa');
+
+    if (tipo === 'condominio') {
+        secaoCondominio.style.display = 'block';
+        secaoPessoaEmpresa.style.display = 'none';
+    } else {
+        secaoCondominio.style.display = 'none';
+        secaoPessoaEmpresa.style.display = 'block';
+    }
+}
+
+function alterarCamposSindico() {
+    const check = document.getElementById('c_tem_sindico').checked;
+    document.getElementById('camposSindico').style.display = check ? 'block' : 'none';
+}
+
+function alterarCamposSubsindico() {
+    const check = document.getElementById('c_tem_subsindico').checked;
+    document.getElementById('camposSubsindico').style.display = check ? 'block' : 'none';
+}
+
+function alterarCamposConselheiros() {
+    const check = document.getElementById('c_tem_conselheiros').checked;
+    document.getElementById('camposConselheiros').style.display = check ? 'block' : 'none';
+}
+
+// Funções para adicionar/remover serviços
+function adicionarServico() {
+    const container = document.getElementById('servicosContainer');
+    const count = container.children.length + 1;
+
+    const novoServico = document.createElement('div');
+    novoServico.className = 'servico-item';
+    novoServico.style.cssText = 'margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 3px;';
+    novoServico.innerHTML = `
+        <label>Serviço ${count}:</label>
+        <textarea class="c_servico" placeholder="Descreva o serviço"></textarea>
+        <button type="button" onclick="removerServico(this)" class="btn btn-danger" style="margin-top: 5px; padding: 5px 10px; font-size: 12px;">Remover</button>
+    `;
+
+    container.appendChild(novoServico);
+}
+
+function removerServico(btn) {
+    const container = document.getElementById('servicosContainer');
+    if (container.children.length > 1) {
+        btn.parentElement.remove();
+    } else {
+        alert('É necessário ter pelo menos um serviço!');
+    }
+}
+</script>

@@ -1,0 +1,45 @@
+﻿<!-- ORÇAMENTO -->
+<div id="paginaOrcamento" style="display:none">
+    <div class="caixa logo-titulo">
+        <img src="" id="logoPreview">
+        <div class="w-100 text-center">
+            <div class="titulo-principal">LITORAL POLIMENTOS</div>
+            <div class="titulo-secundario">MÁRMORES E GRANITOS</div>
+            <div style="font-size:20px; font-weight:bold; margin-top:25px;">ORÇAMENTO</div>
+        </div>
+    </div>
+
+    <div class="caixa">
+        <div class="bloco-titulo">TOMADOR DE SERVIÇO</div>
+        <label>Nome do Cliente:</label>
+        <input id="cliente" type="text" placeholder="Digite o nome do cliente">
+        <label>Endereço:</label>
+        <input id="endereco" type="text" placeholder="Digite o endereço">
+    </div>
+
+    <div class="caixa">
+        <div class="bloco-titulo">DISCRIMINAÇÃO DO SERVIÇO</div>
+        <textarea id="descricao" placeholder="Descreva o serviço"></textarea>
+    </div>
+
+    <div class="caixa">
+        <div class="bloco-titulo">ORÇAMENTO</div>
+        <label>Valor Total (R$):</label>
+        <input id="valor" placeholder="R$ 0,00">
+        <label>Prazo (dias):</label>
+        <input id="prazo" type="text" placeholder="Digite o número de dias">
+        <label>Forma de pagamento:</label>
+        <select id="formaPagamento">
+            <option value="50% no início do serviço e 50% no término">50% no início e 50% no término</option>
+            <option value="À vista">À vista</option>
+            <option value="outro">Outro (especificar abaixo)</option>
+        </select>
+        <textarea id="formaOutro" style="display:none;" placeholder="Especifique a forma de pagamento"></textarea>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+        <button id="btnPdf" class="btn btn-primary-custom" style="width: 150px;">📄 PDF</button>
+        <button id="btnShare" class="btn btn-share" style="display:none; width: 150px;">📤 Compartilhar</button>
+        <button class="btn btn-voltar" onclick="voltarMenu()" style="width: 150px;">Voltar</button>
+    </div>
+</div>

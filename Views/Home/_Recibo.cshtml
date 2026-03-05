@@ -1,0 +1,45 @@
+﻿<!-- RECIBO -->
+<div id="paginaRecibo" style="display:none">
+    <div class="caixa logo-titulo">
+        <img src="" id="logoRecibo">
+        <div class="w-100 text-center">
+            <div class="titulo-principal">LITORAL POLIMENTOS</div>
+            <div class="titulo-secundario">MÁRMORES E GRANITOS</div>
+            <div style="font-size:20px; font-weight:bold; margin-top:25px;">RECIBO</div>
+        </div>
+    </div>
+
+    <div class="caixa">
+        <label>Nome do Cliente:</label>
+        <input id="r_cliente" placeholder="Digite o nome do cliente">
+
+        <label>Tipo de Documento:</label>
+        <select id="r_tipo_doc" onchange="atualizarLabelDoc()">
+            <option value="cpf">CPF</option>
+            <option value="cnpj">CNPJ</option>
+        </select>
+
+        <label id="label_doc">CPF:</label>
+        <input id="r_cpf" placeholder="Digite o documento" maxlength="18" oninput="mascararDocumento()">
+
+        <label>Endereço:</label>
+        <input id="r_endereco" placeholder="Digite o endereço">
+        <label>Serviço Prestado:</label>
+        <textarea id="r_servico" placeholder="Descreva o serviço prestado"></textarea>
+        <label>Valor (R$):</label>
+        <input id="r_valor" placeholder="R$ 0,00">
+        <label>Forma de Pagamento:</label>
+        <select id="r_pagamento">
+            <option value="50% do valor no início do serviço e 50% no término">50% no início e 50% no término</option>
+            <option value="À vista">À vista</option>
+            <option value="outro">Outro (especificar abaixo)</option>
+        </select>
+        <textarea id="r_formaOutro" style="display:none;" placeholder="Especifique a forma de pagamento"></textarea>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+        <button id="btnPdfRecibo" class="btn btn-primary-custom" style="width: 150px;">📄 PDF</button>
+        <button id="btnShareRecibo" class="btn btn-share" style="display:none; width: 150px;">📤 Compartilhar</button>
+        <button class="btn btn-voltar" onclick="voltarMenu()" style="width: 150px;">Voltar</button>
+    </div>
+</div>
