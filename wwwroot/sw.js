@@ -1,7 +1,7 @@
 ﻿const CACHE_NAME = 'litoral-v1';
 const assets = [
     '/',
-    '/css/site.css',
+    '/SistemaLitoralPolimentos.styles.css', // Nome corrigido conforme sua pasta
     '/js/site.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];

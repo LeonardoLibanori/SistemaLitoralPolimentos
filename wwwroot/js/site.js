@@ -297,38 +297,46 @@ document.addEventListener('click', (e) => {
     if (e.target.id === 'btnShareContrato') shareContrato();
 });
 
-// Compartilhar via WhatsApp (abre o WhatsApp Web/Mobile com texto pré-preenchido)
 function shareOrcamento() {
-    const cliente = (document.getElementById('cliente') || {}).value || '';
-    const valor = (document.getElementById('valor') || {}).value || '';
-    const descricao = (document.getElementById('descricao') || {}).value || '';
-    const forma = (document.getElementById('formaPagamento') || {}).value || '';
-    const formaOutro = (document.getElementById('formaOutro') || {}).value || '';
-    const formaText = forma === 'outro' ? formaOutro : forma;
-    const text = `Orçamento - Litoral Polimentos\nCliente: ${cliente}\nValor: ${valor}\nForma: ${formaText}\nServiço: ${descricao}`;
-    const url = 'https://wa.me/?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
+    if (!lastPdfBlob) return alert('Gere o PDF antes de compartilhar!');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(lastPdfBlob);
+    a.download = 'Orcamento.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => {
+        const msg = encodeURIComponent('📄 *Orçamento – Litoral Polimentos*\n\nSegue o orçamento em anexo.');
+        window.open('https://wa.me/?text=' + msg, '_blank');
+    }, 1500);
 }
 
 function shareRecibo() {
-    const cliente = (document.getElementById('r_cliente') || {}).value || '';
-    const valor = (document.getElementById('r_valor') || {}).value || '';
-    const servico = (document.getElementById('r_servico') || {}).value || '';
-    const pagamento = (document.getElementById('r_pagamento') || {}).value || '';
-    const formaOutro = (document.getElementById('r_formaOutro') || {}).value || '';
-    const formaText = pagamento === 'outro' ? formaOutro : pagamento;
-    const text = `Recibo - Litoral Polimentos\nCliente: ${cliente}\nValor: ${valor}\nForma: ${formaText}\nServiço: ${servico}`;
-    const url = 'https://wa.me/?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
+    if (!reciboPdfBlob) return alert('Gere o PDF antes de compartilhar!');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(reciboPdfBlob);
+    a.download = 'Recibo.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => {
+        const msg = encodeURIComponent('🧾 *Recibo – Litoral Polimentos*\n\nSegue o recibo em anexo.');
+        window.open('https://wa.me/?text=' + msg, '_blank');
+    }, 1500);
 }
 
 function shareContrato() {
-    const nome = (document.getElementById('c_nome') || {}).value || '';
-    const valor = (document.getElementById('c_valor') || {}).value || '';
-    const servico = (document.getElementById('c_servico') || {}).value || '';
-    const text = `Contrato - Litoral Polimentos\nContratante: ${nome}\nValor: ${valor}\nServiço: ${servico}`;
-    const url = 'https://wa.me/?text=' + encodeURIComponent(text);
-    window.open(url, '_blank');
+    if (!contratoPdfBlob) return alert('Gere o PDF antes de compartilhar!');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(contratoPdfBlob);
+    a.download = 'Contrato.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => {
+        const msg = encodeURIComponent('📄 *Contrato – Litoral Polimentos*\n\nSegue o contrato em anexo.');
+        window.open('https://wa.me/?text=' + msg, '_blank');
+    }, 1500);
 }
 
 // ================= GERADOR DE PDF (RECIBO) =================
