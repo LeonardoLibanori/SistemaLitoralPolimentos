@@ -2,6 +2,8 @@
 
 Sistema de gerenciamento de documentos (orçamentos, recibos e contratos) para a empresa Litoral Polimentos, desenvolvido com **ASP.NET Core Razor Pages** e **.NET 10**.
 
+Acesse: https://litoralpolimentos.runasp.net
+
 ## 🎯 Características
 
 - ✅ **Autenticação Segura** - Tela de login obrigatória na primeira página
@@ -36,41 +38,6 @@ Sistema de gerenciamento de documentos (orçamentos, recibos e contratos) para a
 - **PDF**: jsPDF 2.5.1
 - **Banco de Dados**: Local Storage (JSON)
 
-## 📦 Instalação
-
-### Pré-requisitos
-- .NET 10 SDK ou superior
-- Visual Studio 2024 ou VS Code
-- Git
-
-### Passos
-
-1. **Clone o repositório**
-```bash
-git clone https://github.com/LeonardoLibanori/SistemaLitoralPolimentos.git
-cd SistemaLitoralPolimentos
-```
-
-2. **Restaure as dependências**
-```bash
-dotnet restore
-```
-
-3. **Execute a aplicação**
-```bash
-dotnet run
-```
-
-4. **Acesse no navegador**
-```
-https://localhost:5001
-```
-
-## 🔑 Credenciais de Acesso
-
-**Senha**: `Leo1212`
-
-> ⚠️ **Nota**: A senha está armazenada no backend (`Program.cs` / `HomeController.cs`) e não é visível no código-fonte público.
 
 ## 📁 Estrutura do Projeto
 
