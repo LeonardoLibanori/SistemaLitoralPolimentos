@@ -11,10 +11,13 @@
 
     <div class="caixa">
         <div class="bloco-titulo">TOMADOR DE SERVIÇO</div>
-        <label>Nome do Cliente:</label>
+
+       
+        <label style="margin-top:12px">Nome do Cliente:</label>
         <input id="cliente" type="text" placeholder="Digite o nome do cliente">
+
         <label>Endereço:</label>
-        <input id="endereco" type="text" placeholder="Digite o endereço">
+        <input id="enderecoOrcamento" type="text" placeholder="Digite o endereço" autocomplete="off">
     </div>
 
     <div class="caixa">
@@ -37,9 +40,17 @@
         <textarea id="formaOutro" style="display:none;" placeholder="Especifique a forma de pagamento"></textarea>
     </div>
 
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
-        <button id="btnPdf" class="btn btn-primary-custom" style="width: 150px;">📄 PDF</button>
-        <button id="btnShare" class="btn btn-share" style="display:none; width: 150px;">📤 Compartilhar</button>
-        <button class="btn btn-voltar" onclick="voltarMenu()" style="width: 150px;">Voltar</button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:24px;">
+        <button id="btnPdf" style="display:flex;align-items:center;justify-content:center;gap:8px;width:220px;padding:11px 0;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+            Gerar PDF
+        </button>
+        <button id="btnShare" style="display:none;align-items:center;justify-content:center;gap:8px;width:220px;padding:11px 0;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.63 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l.46-.46a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 23 18z" /></svg>
+            Compartilhar
+        </button>
+        <button onclick="voltarMenu()" style="display:flex;align-items:center;justify-content:center;gap:8px;width:220px;padding:11px 0;background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">
+            ← Voltar
+        </button>
     </div>
 </div>

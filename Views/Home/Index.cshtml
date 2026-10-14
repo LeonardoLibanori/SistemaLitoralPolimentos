@@ -2,328 +2,434 @@
     ViewData["Title"] = "Início";
 }
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Litoral Polimentos - Documentos</title>
+<div class="container" id="menuPrincipal">
+    <div class="header">
+        <div class="logo-wrap">
+            <img id="logoImg" src="" alt="Litoral Polimentos">
+        </div>
+        <div class="brand-name">Litoral Polimentos</div>
+        <div class="brand-sub">Mármores & Granitos</div>
+        <div class="divider"></div>
+    </div>
+
+    <p class="menu-title">Selecione o documento</p>
+
+    <div class="menu-grid">
+        <a href="#" onclick="irPara('orcamento')" class="doc-btn">
+            <div class="btn-icon icon-orc">📋</div>
+            <div class="btn-text">
+                <span class="btn-label">Orçamento</span>
+                <span class="btn-desc">Gerar proposta de serviço para o cliente</span>
+            </div>
+            <span class="btn-arrow">→</span>
+        </a>
+
+        <a href="#" onclick="irPara('recibo')" class="doc-btn">
+            <div class="btn-icon icon-rec">🧾</div>
+            <div class="btn-text">
+                <span class="btn-label">Recibo</span>
+                <span class="btn-desc">Emitir recibo de pagamento recebido</span>
+            </div>
+            <span class="btn-arrow">→</span>
+        </a>
+
+        <a href="#" onclick="irPara('contrato')" class="doc-btn">
+            <div class="btn-icon icon-con">📄</div>
+            <div class="btn-text">
+                <span class="btn-label">Contrato</span>
+                <span class="btn-desc">Formalizar prestação de serviços</span>
+            </div>
+            <span class="btn-arrow">→</span>
+        </a>
+    </div>
+</div>
+
+<div id="secao-orcamento" style="display:none">
+    @await Html.PartialAsync("_Orcamento")
+</div>
+<div id="secao-recibo" style="display:none">
+    @await Html.PartialAsync("_Recibo")
+</div>
+<div id="secao-contrato" style="display:none">
+    @await Html.PartialAsync("_Contrato")
+</div>
+
+@section Styles {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-            *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            /* Neutraliza o container do Bootstrap */
-            div.container {
-    max-width: 520px !important;
-    padding: 0 20px !important;
-}
+        /* Neutraliza o container do Bootstrap */
+        div.container {
+            max-width: 520px !important;
+            padding: 0 20px !important;
+        }
 
-            :root {
-              --stone: #1a1714;
-              --marble: #f5f0eb;
-              --gold: #b8954a;
-              --gold-light: #d4b06a;
-              --granite: #4a4540;
-              --cream: #faf7f4;
-              --shadow: rgba(26,23,20,0.15);
-            }
+        :root {
+          --stone: #1a1714;
+          --marble: #f5f0eb;
+          --gold: #b8954a;
+          --gold-light: #d4b06a;
+          --granite: #4a4540;
+          --cream: #faf7f4;
+          --shadow: rgba(26,23,20,0.15);
+        }
 
-            body {
-              font-family: 'DM Sans', sans-serif;
-              background: var(--cream);
-              min-height: 100vh;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              padding: 40px 20px;
-              background-image:
-                radial-gradient(ellipse at 20% 20%, rgba(184,149,74,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(74,69,64,0.08) 0%, transparent 50%);
-            }
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--cream);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 20px;
+          background-image:
+            radial-gradient(ellipse at 20% 20%, rgba(184,149,74,0.06) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 80%, rgba(74,69,64,0.08) 0%, transparent 50%);
+        }
 
-            /* Textura sutil de fundo */
-            body::before {
-              content: '';
-              position: fixed;
-              inset: 0;
-              background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8954a' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-              pointer-events: none;
-              z-index: 0;
-            }
+        /* Textura sutil de fundo */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8954a' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+          pointer-events: none;
+          z-index: 0;
+        }
 
-            .container {
-              position: relative;
-              z-index: 1;
-              width: 100%;
-              max-width: 520px;
-            }
+        .container {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+          max-width: 520px;
+        }
 
-            /* Header */
-            .header {
-              text-align: center;
-              margin-bottom: 48px;
-              animation: fadeDown 0.7s ease both;
-            }
+        /* Header */
+        .header {
+          text-align: center;
+          margin-bottom: 48px;
+          animation: fadeDown 0.7s ease both;
+        }
 
-            .logo-wrap {
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 110px;
-              height: 110px;
-              background: white;
-              border-radius: 50%;
-              box-shadow: 0 4px 30px var(--shadow), 0 0 0 6px var(--marble), 0 0 0 8px var(--gold);
-              margin-bottom: 24px;
-              overflow: hidden;
-            }
+        .logo-wrap {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 110px;
+          height: 110px;
+          background: white;
+          border-radius: 50%;
+          box-shadow: 0 4px 30px var(--shadow), 0 0 0 6px var(--marble), 0 0 0 8px var(--gold);
+          margin-bottom: 24px;
+          overflow: hidden;
+        }
 
-            .logo-wrap img {
-              width: 90px;
-              height: 90px;
-              object-fit: contain;
-            }
+        .logo-wrap img {
+          width: 90px;
+          height: 90px;
+          object-fit: contain;
+        }
 
-            .brand-name {
-              font-family: 'Playfair Display', serif;
-              font-size: clamp(26px, 6vw, 36px);
-              font-weight: 900;
-              color: var(--stone);
-              letter-spacing: -0.5px;
-              line-height: 1.1;
-            }
+        .brand-name {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(26px, 6vw, 36px);
+          font-weight: 900;
+          color: var(--stone);
+          letter-spacing: -0.5px;
+          line-height: 1.1;
+        }
 
-            .brand-sub {
-              font-size: 13px;
-              font-weight: 300;
-              color: var(--gold);
-              letter-spacing: 4px;
-              text-transform: uppercase;
-              margin-top: 6px;
-            }
+        .brand-sub {
+          font-size: 13px;
+          font-weight: 300;
+          color: var(--gold);
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          margin-top: 6px;
+        }
 
-            .divider {
-              width: 60px;
-              height: 2px;
-              background: linear-gradient(90deg, transparent, var(--gold), transparent);
-              margin: 16px auto 0;
-            }
+        .divider {
+          width: 60px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, var(--gold), transparent);
+          margin: 16px auto 0;
+        }
 
-            /* Menu de documentos */
-            .menu-title {
-              font-size: 11px;
-              font-weight: 500;
-              letter-spacing: 3px;
-              text-transform: uppercase;
-              color: var(--granite);
-              text-align: center;
-              margin-bottom: 20px;
-            }
+        /* Menu de documentos */
+        .menu-title {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: var(--granite);
+          text-align: center;
+          margin-bottom: 20px;
+        }
 
-            .menu-grid {
-              display: flex;
-              flex-direction: column;
-              gap: 14px;
-            }
+        .menu-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
 
-            .doc-btn {
-              display: flex;
-              align-items: center;
-              gap: 20px;
-              padding: 22px 28px;
-              background: white;
-              border: 1.5px solid rgba(184,149,74,0.2);
-              border-radius: 16px;
-              text-decoration: none;
-              cursor: pointer;
-              transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-              box-shadow: 0 2px 12px var(--shadow);
-              animation: fadeUp 0.6s ease both;
-              position: relative;
-              overflow: hidden;
-            }
+        .doc-btn {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 22px 28px;
+          background: white;
+          border: 1.5px solid rgba(184,149,74,0.2);
+          border-radius: 16px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 2px 12px var(--shadow);
+          animation: fadeUp 0.6s ease both;
+          position: relative;
+          overflow: hidden;
+        }
 
-            .doc-btn::before {
-              content: '';
-              position: absolute;
-              left: 0; top: 0; bottom: 0;
-              width: 4px;
-              background: var(--gold);
-              border-radius: 4px 0 0 4px;
-              transform: scaleY(0);
-              transition: transform 0.3s ease;
-            }
+        .doc-btn::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 4px;
+          background: var(--gold);
+          border-radius: 4px 0 0 4px;
+          transform: scaleY(0);
+          transition: transform 0.3s ease;
+        }
 
-            .doc-btn:hover {
-              transform: translateX(6px) scale(1.01);
-              border-color: var(--gold);
-              box-shadow: 0 8px 32px rgba(184,149,74,0.2);
-            }
+        .doc-btn:hover {
+          transform: translateX(6px) scale(1.01);
+          border-color: var(--gold);
+          box-shadow: 0 8px 32px rgba(184,149,74,0.2);
+        }
 
-            .doc-btn:hover::before {
-              transform: scaleY(1);
-            }
+        .doc-btn:hover::before {
+          transform: scaleY(1);
+        }
 
-            .doc-btn:nth-child(1) { animation-delay: 0.1s; }
-            .doc-btn:nth-child(2) { animation-delay: 0.2s; }
-            .doc-btn:nth-child(3) { animation-delay: 0.3s; }
+        .doc-btn:nth-child(1) { animation-delay: 0.1s; }
+        .doc-btn:nth-child(2) { animation-delay: 0.2s; }
+        .doc-btn:nth-child(3) { animation-delay: 0.3s; }
 
-            .btn-icon {
-              width: 52px;
-              height: 52px;
-              border-radius: 12px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 24px;
-              flex-shrink: 0;
-            }
+        .btn-icon {
+          width: 52px;
+          height: 52px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          flex-shrink: 0;
+        }
 
-            .icon-orc  { background: rgba(184,149,74,0.12); }
-            .icon-rec  { background: rgba(74,149,74,0.12); }
-            .icon-con  { background: rgba(74,74,149,0.12); }
+        .icon-orc  { background: rgba(184,149,74,0.12); }
+        .icon-rec  { background: rgba(74,149,74,0.12); }
+        .icon-con  { background: rgba(74,74,149,0.12); }
 
-            .btn-text { flex: 1; }
-            .btn-label {
-              font-family: 'Playfair Display', serif;
-              font-size: 18px;
-              font-weight: 700;
-              color: var(--stone);
-              display: block;
-            }
-            .btn-desc {
-              font-size: 12px;
-              color: var(--granite);
-              margin-top: 2px;
-              font-weight: 300;
-            }
+        .btn-text { flex: 1; }
+        .btn-label {
+          font-family: 'Playfair Display', serif;
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--stone);
+          display: block;
+        }
+        .btn-desc {
+          font-size: 12px;
+          color: var(--granite);
+          margin-top: 2px;
+          font-weight: 300;
+        }
 
-            .btn-arrow {
-              font-size: 20px;
-              color: var(--gold);
-              opacity: 0;
-              transform: translateX(-8px);
-              transition: all 0.3s ease;
-            }
-            .doc-btn:hover .btn-arrow {
-              opacity: 1;
-              transform: translateX(0);
-            }
+        .btn-arrow {
+          font-size: 20px;
+          color: var(--gold);
+          opacity: 0;
+          transform: translateX(-8px);
+          transition: all 0.3s ease;
+        }
+        .doc-btn:hover .btn-arrow {
+          opacity: 1;
+          transform: translateX(0);
+        }
 
-            /* Footer */
-            .footer {
-              text-align: center;
-              margin-top: 40px;
-              font-size: 11px;
-              color: #aaa;
-              letter-spacing: 1px;
-              animation: fadeUp 0.8s 0.4s ease both;
-            }
+        /* Footer */
+        .footer {
+          text-align: center;
+          margin-top: 40px;
+          font-size: 11px;
+          color: #aaa;
+          letter-spacing: 1px;
+          animation: fadeUp 0.8s 0.4s ease both;
+        }
 
-            @@media (max-width: 480px) {
-              body { padding: 30px 16px; }
-              .logo-wrap { width: 90px; height: 90px; }
-              .logo-wrap img { width: 72px; height: 72px; }
-              .brand-name { font-size: 24px; }
-              .doc-btn { padding: 18px 20px; gap: 14px; }
-              .btn-icon { width: 44px; height: 44px; font-size: 20px; }
-              .btn-label { font-size: 16px; }
-            }
+        @@media (max-width: 480px) {
+          body { padding: 30px 16px; }
+          .logo-wrap { width: 90px; height: 90px; }
+          .logo-wrap img { width: 72px; height: 72px; }
+          .brand-name { font-size: 24px; }
+          .doc-btn { padding: 18px 20px; gap: 14px; }
+          .btn-icon { width: 44px; height: 44px; font-size: 20px; }
+          .btn-label { font-size: 16px; }
+        }
 
-            @@keyframes fadeDown {
-              from { opacity: 0; transform: translateY(-20px); }
-              to   { opacity: 1; transform: translateY(0); }
+        @@keyframes fadeDown {
+          from { opacity: 0; transform: translateY(-20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @@keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @@keyframes phSpin {
+            to {
+                transform: rotate(360deg);
             }
-            @@keyframes fadeUp {
-              from { opacity: 0; transform: translateY(20px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
+        }
     </style>
-</head>
-<body>
-    <div class="container" id="menuPrincipal">
-    <div class="header">
-            <div class="logo-wrap">
-                <img id="logoImg" src="" alt="Litoral Polimentos">
-            </div>
-            <div class="brand-name">Litoral Polimentos</div>
-            <div class="brand-sub">Mármores &amp; Granitos</div>
-            <div class="divider"></div>
-        </div>
-
-        <p class="menu-title">Selecione o documento</p>
-
-        <div class="menu-grid">
-            <a href="#" onclick="irPara('orcamento')" class="doc-btn">
-                <div class="btn-icon icon-orc">📋</div>
-                <div class="btn-text">
-                    <span class="btn-label">Orçamento</span>
-                    <span class="btn-desc">Gerar proposta de serviço para o cliente</span>
-                </div>
-                <span class="btn-arrow">→</span>
-            </a>
-
-            <a href="#" onclick="irPara('recibo')" class="doc-btn">
-                <div class="btn-icon icon-rec">🧾</div>
-                <div class="btn-text">
-                    <span class="btn-label">Recibo</span>
-                    <span class="btn-desc">Emitir recibo de pagamento recebido</span>
-                </div>
-                <span class="btn-arrow">→</span>
-            </a>
-
-           <a href="#" onclick="irPara('contrato')" class="doc-btn">
-                <div class="btn-icon icon-con">📄</div>
-                <div class="btn-text">
-                    <span class="btn-label">Contrato</span>
-                    <span class="btn-desc">Formalizar prestação de serviços</span>
-                </div>
-                <span class="btn-arrow">→</span>
-            </a>
-        </div>
-    </div>
-
-    <div id="secao-orcamento" style="display:none">
-        @await Html.PartialAsync("_Orcamento")
-    </div>
-    <div id="secao-recibo" style="display:none">
-        @await Html.PartialAsync("_Recibo")
-    </div>
-    <div id="secao-contrato" style="display:none">
-        @await Html.PartialAsync("_Contrato")
-    </div>
-
-    <script>
-      document.getElementById('logoImg').src = '/icon-192.png';
-
-     function irPara(secao) {
-    // Esconde o menu
-    document.getElementById('menuPrincipal').style.display = 'none';
-
-    // Mostra o wrapper da seção
-    const el = document.getElementById('secao-' + secao);
-    el.style.display = 'block';
-
-    // Mostra o div interno da partial (que começa display:none)
-    const mapa = {
-        'orcamento': 'paginaOrcamento',
-        'recibo': 'paginaRecibo',
-        'contrato': 'paginaContrato'
-    };
-    const interno = document.getElementById(mapa[secao]);
-    if (interno) interno.style.display = 'block';
-
-    // Ajusta o body
-    document.body.style.display = 'block';
-    document.body.style.alignItems = 'unset';
-    document.body.style.justifyContent = 'unset';
-    document.body.style.padding = '0';
-
-    window.scrollTo(0, 0);
 }
- 
+
+@section Scripts {
+    <script>
+        document.getElementById('logoImg').src = '/icon-192.png';
+
+        const _photonIniciado = {};
+
+        function irPara(secao) {
+            document.getElementById('menuPrincipal').style.display = 'none';
+
+            const el = document.getElementById('secao-' + secao);
+            el.style.display = 'block';
+
+            const mapa = { 'orcamento':'paginaOrcamento', 'recibo':'paginaRecibo', 'contrato':'paginaContrato' };
+            const interno = document.getElementById(mapa[secao]);
+            if (interno) interno.style.display = 'block';
+
+            document.body.style.display        = 'block';
+            document.body.style.alignItems     = 'unset';
+            document.body.style.justifyContent = 'unset';
+            document.body.style.padding        = '0';
+            window.scrollTo(0, 0);
+
+            const camposPorSecao = {
+                'orcamento': 'enderecoOrcamento',
+                'recibo':    'enderecoRecibo',
+                'contrato':  'enderecoContrato'
+            };
+            const campoId = camposPorSecao[secao];
+            if (campoId) iniciarAutocomplete(campoId);
+        }
+        // =====================================================
+        // AUTOCOMPLETE DE ENDEREÇO — ViaCEP (gratuito, sem chave)
+        // O usuário digita o CEP (8 números) → preenche endereço
+        // Ou digita livremente o endereço
+        // =====================================================
+        function iniciarAutocomplete(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input || input.dataset.ph) return;
+            input.dataset.ph = '1';
+
+            // Cria o container de sugestão de CEP abaixo do input
+            const hint = document.createElement('div');
+            hint.style.cssText = `
+                display:none; position:absolute; top:calc(100% + 4px); left:0; right:0;
+                background:#fff; border:1px solid #e2e8f0; border-radius:10px;
+                box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:9999; padding:4px 0;`;
+
+            // Wrap relativo
+            const wrap = document.createElement('div');
+            wrap.style.position = 'relative';
+            input.parentNode.insertBefore(wrap, input);
+            wrap.appendChild(input);
+            wrap.appendChild(hint);
+
+            // Placeholder dinâmico
+            input.placeholder = 'CEP (ex: 11701-000) ou endereço completo';
+
+            let timer = null;
+
+            input.addEventListener('input', function() {
+                clearTimeout(timer);
+                const v = this.value.replace(/\D/g, '');
+
+                // Aplica máscara de CEP enquanto digita só números
+                if (/^\d+$/.test(this.value.replace('-',''))) {
+                    if (v.length <= 8) {
+                        this.value = v.length > 5 ? v.slice(0,5) + '-' + v.slice(5) : v;
+                    }
+                }
+
+                // Quando atingir 8 dígitos, busca o CEP
+                if (v.length === 8) {
+                    hint.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:8px;">
+                        <div style="width:13px;height:13px;border:2px solid #e2e8f0;border-top-color:#64748b;border-radius:50%;animation:phSpin .6s linear infinite;flex-shrink:0;"></div>
+                        Buscando CEP...</div>`;
+                    hint.style.display = 'block';
+                    timer = setTimeout(() => buscarCep(v), 300);
+                } else {
+                    hint.style.display = 'none';
+                }
+            });
+
+            async function buscarCep(cep) {
+                try {
+                    const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    const d = await r.json();
+
+                    if (d.erro) {
+                        hint.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:#ef4444;">CEP não encontrado. Digite o endereço manualmente.</div>`;
+                        return;
+                    }
+
+                    // Monta endereço completo
+                    const partes = [];
+                    if (d.logradouro) partes.push(d.logradouro);
+                    if (d.bairro)     partes.push(d.bairro);
+                    if (d.localidade) partes.push(d.localidade);
+                    if (d.uf)         partes.push(d.uf);
+                    const enderecoCompleto = partes.join(', ');
+
+                    hint.innerHTML = `
+                        <div style="padding:10px 14px;cursor:pointer;font-size:13.5px;color:#334155;border-radius:8px;transition:background .1s;"
+                             onmouseover="this.style.background='#f1f5f9'"
+                             onmouseout="this.style.background=''"
+                             onclick="selecionarEndereco('${inputId}', '${enderecoCompleto}')">
+                            <div style="font-weight:600;color:#0f172a;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;opacity:.5"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                ${d.logradouro || 'Endereço'}
+                            </div>
+                            <div style="font-size:12px;color:#64748b;margin-top:2px;padding-left:19px;">
+                                ${d.bairro ? d.bairro + ' · ' : ''}${d.localidade}/${d.uf} · CEP ${d.cep}
+                            </div>
+                        </div>`;
+
+                } catch(e) {
+                    hint.innerHTML = `<div style="padding:12px 14px;font-size:13px;color:#94a3b8;">Erro ao buscar CEP.</div>`;
+                }
+            }
+
+            // Fecha ao clicar fora
+            document.addEventListener('click', e => {
+                if (!wrap.contains(e.target)) hint.style.display = 'none';
+            });
+        }
+
+        function selecionarEndereco(inputId, endereco) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = endereco;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                // Fecha o hint
+                const hint = input.parentNode.querySelector('div[style*="position:absolute"]');
+                if (hint) hint.style.display = 'none';
+                input.focus();
+            }
+        }
     </script>
-</body>
-</html>
+}

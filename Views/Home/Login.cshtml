@@ -114,6 +114,7 @@
                 }
 
                 <form method="post" action="@Url.Action("Login", "Home")">
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="senha" class="form-label">Senha de Acesso</label>
                         <input type="password" class="form-control" id="senha" name="senha" 

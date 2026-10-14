@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Teste Photon API</title>
+<style>
+    body { font-family: monospace; padding: 20px; background: #f8f8f8; }
+    textarea { width: 100%; height: 200px; margin-top: 10px; font-size: 12px; }
+    button { padding: 8px 16px; margin: 4px; cursor: pointer; }
+    .ok  { color: green; font-weight: bold; }
+    .err { color: red;   font-weight: bold; }
+    input { width: 400px; padding: 6px; font-size: 14px; }
+</style>
+</head>
+<body>
+<h2>🔍 Diagnóstico Autocomplete</h2>
+
+<p>Termo de busca:</p>
+<input id="termo" value="Rua Presidente Kennedy" />
+<br><br>
+
+<button onclick="testar('photon_bias')">1. Photon com bias SP</button>
+<button onclick="testar('photon_puro')">2. Photon sem filtros</button>
+<button onclick="testar('photon_br')">3. Photon countrycode=BR</button>
+<br><br>
+
+<div id="status"></div>
+<textarea id="log" placeholder="Resultado aparece aqui..."></textarea>
+
+<script>
+function log(txt) {
+    document.getElementById('log').value += txt + '\n';
+}
+function setStatus(txt, ok) {
+    const el = document.getElementById('status');
+    el.innerHTML = `<span class="${ok ? 'ok' : 'err'}">${txt}</span>`;
+}
+
+async function testar(modo) {
+    document.getElementById('log').value = '';
+    const q = document.getElementById('termo').value;
+    setStatus('Buscando...', true);
+
+    const urls = {
+        photon_bias: `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lang=pt&limit=5&lat=-23.5&lon=-46.6`,
+        photon_puro: `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lang=pt&limit=5`,
+        photon_br:   `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&lang=pt&limit=5&countrycode=BR`,
+    };
+
+    const url = urls[modo];
+    log('URL: ' + url);
+    log('---');
+
+    try {
+        const r = await fetch(url);
+        log('HTTP Status: ' + r.status);
+
+        if (!r.ok) {
+            setStatus('❌ Erro HTTP ' + r.status, false);
+            const txt = await r.text();
+            log('Resposta: ' + txt);
+            return;
+        }
+
+        const j = await r.json();
+        log('Total features: ' + (j.features?.length ?? 0));
+        log('');
+
+        if (!j.features?.length) {
+            setStatus('⚠️ Retornou 0 resultados', false);
+            return;
+        }
+
+        setStatus('✅ ' + j.features.length + ' resultado(s)', true);
+
+        j.features.forEach((f, i) => {
+            const p = f.properties;
+            log(`[${i}] country_code="${p.country_code}" country="${p.country}"`);
+            log(`     name="${p.name}" street="${p.street}" city="${p.city||p.town||p.village}"`);
+            log(`     state="${p.state}"`);
+            log('');
+        });
+
+    } catch(e) {
+        setStatus('❌ Exceção: ' + e.message, false);
+        log('Erro: ' + e.message);
+        log('Tipo: ' + e.name);
+    }
+}
+</script>
+</body>
+</html>

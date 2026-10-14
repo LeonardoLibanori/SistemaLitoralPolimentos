@@ -1,9 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-    background: #f5f5f5;
+    background: #f1f5f9;
+    margin: 0;
+    padding: 0;
 }
 
 .caixa {
@@ -20,15 +19,15 @@ body {
     gap: 12px;
 }
 
-.logo-titulo img {
-    width: 140px;
-    margin-left: 0;
-}
+    .logo-titulo img {
+        width: 140px;
+        margin-left: 0;
+    }
 
-.logo-titulo > div {
-    flex: 1 1 auto;
-    text-align: center;
-}
+    .logo-titulo > div {
+        flex: 1 1 auto;
+        text-align: center;
+    }
 
 .titulo-principal {
     font-size: 22px;
@@ -86,36 +85,41 @@ textarea {
     transition: transform .08s ease, box-shadow .08s ease, opacity .12s ease;
 }
 
-.btn:active { transform: translateY(1px); }
-.btn:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+    .btn:active {
+        transform: translateY(1px);
+    }
 
-/* Primary action (PDF) */
-.btn.btn-primary-custom {
-    background: linear-gradient(180deg,#0d6efd,#0b5ed7) !important;
-    color: #fff !important;
-    border: 1px solid rgba(11,94,215,0.15) !important;
-}
+    .btn:hover {
+        box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
 
-/* Menu buttons (index) */
-.btn.btn-menu {
-    background: linear-gradient(180deg,#198754,#0f5132) !important;
-    color: #fff !important;
-    border: 1px solid rgba(15,81,50,0.12) !important;
-}
+    /* Primary action (PDF) */
+    .btn.btn-primary-custom {
+        background: linear-gradient(180deg,#0d6efd,#0b5ed7) !important;
+        color: #fff !important;
+        border: 1px solid rgba(11,94,215,0.15) !important;
+    }
 
-/* Share (WhatsApp) */
-.btn.btn-share {
-    background: linear-gradient(180deg,#25D366,#1ebe58) !important;
-    color: #fff !important;
-    border: 1px solid rgba(37,211,102,0.12) !important;
-}
+    /* Menu buttons (index) */
+    .btn.btn-menu {
+        background: linear-gradient(180deg,#198754,#0f5132) !important;
+        color: #fff !important;
+        border: 1px solid rgba(15,81,50,0.12) !important;
+    }
 
-/* Back button */
-.btn.btn-voltar {
-    background: linear-gradient(180deg,#6c757d,#5a6268) !important;
-    color: #fff !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
-}
+    /* Share (WhatsApp) */
+    .btn.btn-share {
+        background: linear-gradient(180deg,#25D366,#1ebe58) !important;
+        color: #fff !important;
+        border: 1px solid rgba(37,211,102,0.12) !important;
+    }
+
+    /* Back button */
+    .btn.btn-voltar {
+        background: linear-gradient(180deg,#6c757d,#5a6268) !important;
+        color: #fff !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+    }
 
 /* ========== NAVBAR STYLES ========== */
 .navbar-principal {
@@ -160,15 +164,15 @@ textarea {
     font-weight: 500;
 }
 
-.btn-navbar:hover {
-    background: #0f5132;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+    .btn-navbar:hover {
+        background: #0f5132;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
 
-.btn-navbar:active {
-    transform: translateY(0);
-}
+    .btn-navbar:active {
+        transform: translateY(0);
+    }
 
 /* Responsive navbar para mobile */
 @media (max-width: 768px) {
@@ -229,8 +233,15 @@ textarea {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 #paginaHistorico .table {
@@ -238,19 +249,19 @@ textarea {
     border-collapse: collapse;
 }
 
-#paginaHistorico .table thead {
-    font-weight: bold;
-}
+    #paginaHistorico .table thead {
+        font-weight: bold;
+    }
 
-#paginaHistorico .table tbody tr:hover {
-    background-color: #f5f5f5;
-    transition: background-color 0.2s ease;
-}
+    #paginaHistorico .table tbody tr:hover {
+        background-color: #f5f5f5;
+        transition: background-color 0.2s ease;
+    }
 
-#paginaHistorico .table td {
-    padding: 12px;
-    vertical-align: middle;
-}
+    #paginaHistorico .table td {
+        padding: 12px;
+        vertical-align: middle;
+    }
 
 #paginaHistorico .btn-sm {
     padding: 6px 12px;
@@ -313,6 +324,61 @@ textarea {
 }
 
 /* Hover states for page buttons */
-#paginaRecibo #btnPdfRecibo.btn-primary-custom:hover { transform: translateY(-1px); }
-#paginaRecibo #btnShareRecibo.btn-share:hover { transform: translateY(-1px); }
-#paginaRecibo .btn-voltar:hover { transform: translateY(-1px); }
+#paginaRecibo #btnPdfRecibo.btn-primary-custom:hover {
+    transform: translateY(-1px);
+}
+
+#paginaRecibo #btnShareRecibo.btn-share:hover {
+    transform: translateY(-1px);
+}
+
+#paginaRecibo .btn-voltar:hover {
+    transform: translateY(-1px);
+}
+
+/* ========== CORREÇÃO BOTÕES HISTÓRICO ========== */
+
+/* Botão Cancelar */
+.btn.btn-outline-danger {
+    background: transparent !important;
+    color: #dc3545 !important;
+    border: 2px solid #dc3545 !important;
+}
+
+    .btn.btn-outline-danger:hover {
+        background: linear-gradient(180deg, #dc3545, #c82333) !important;
+        color: #fff !important;
+    }
+
+/* Botão Ver */
+.btn.btn-outline-secondary {
+    background: transparent !important;
+    color: #495057 !important;
+    border: 2px solid #6c757d !important;
+}
+
+    .btn.btn-outline-secondary:hover {
+        background: linear-gradient(180deg, #6c757d, #5a6268) !important;
+        color: #fff !important;
+    }
+
+/* Botão Aprovar (garantia) */
+.btn.btn-success {
+    background: linear-gradient(180deg, #198754, #0f5132) !important;
+    color: #fff !important;
+    border: 1px solid rgba(15,81,50,0.12) !important;
+}
+
+/* Botão Filtrar (garantia) */
+.btn.btn-primary {
+    background: linear-gradient(180deg, #0d6efd, #0b5ed7) !important;
+    color: #fff !important;
+    border: 1px solid rgba(11,94,215,0.15) !important;
+}
+
+/* Botão X (limpar filtro) */
+.btn.btn-secondary {
+    background: linear-gradient(180deg, #6c757d, #5a6268) !important;
+    color: #fff !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+}

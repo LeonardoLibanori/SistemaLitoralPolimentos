@@ -1,0 +1,549 @@
+﻿@model List<SistemaLitoralPolimentos.Models.Documento>
+@{
+    ViewData["Title"] = "Histórico de Documentos";
+    var cultura = new System.Globalization.CultureInfo("pt-BR");
+}
+
+@section Styles {
+    <style>
+        .hd-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .hd-header-icon {
+            width: 46px;
+            height: 46px;
+            background: #fef3c7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .hd-header-icon svg {
+                width: 24px;
+                height: 24px;
+                stroke: #d97706;
+            }
+
+        .hd-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        /* Filtros */
+        .hd-filtros {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .hd-fg {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+            .hd-fg label {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: #64748b;
+            }
+
+            .hd-fg input, .hd-fg select {
+                padding: 8px 12px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: 13.5px;
+                color: #334155;
+                background: #fafafa;
+                outline: none;
+            }
+
+                .hd-fg input:focus, .hd-fg select:focus {
+                    border-color: #d97706;
+                    background: #fff;
+                }
+
+        .hd-btn-filtrar {
+            padding: 9px 20px;
+            background: #d97706;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+            .hd-btn-filtrar:hover {
+                background: #b45309;
+            }
+
+        .hd-btn-limpar {
+            padding: 9px 16px;
+            background: transparent;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+            .hd-btn-limpar:hover {
+                background: #f1f5f9;
+            }
+
+        /* Cards */
+        .hd-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+            margin-bottom: 14px;
+            border-left: 4px solid var(--hd-cor);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+            .hd-card.pendente {
+                --hd-cor: #d97706;
+            }
+
+            .hd-card.feito {
+                --hd-cor: #16a34a;
+            }
+
+            .hd-card.cancelado {
+                --hd-cor: #dc2626;
+            }
+
+        .hd-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hd-card-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .hd-tipo {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .hd-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+            .hd-badge.pendente {
+                background: #fffbeb;
+                color: #92400e;
+            }
+
+            .hd-badge.feito {
+                background: #f0fdf4;
+                color: #15803d;
+            }
+
+            .hd-badge.cancelado {
+                background: #fef2f2;
+                color: #b91c1c;
+            }
+
+        .hd-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 20px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+            .hd-info span {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .hd-info svg {
+                width: 13px;
+                height: 13px;
+                stroke: #94a3b8;
+                flex-shrink: 0;
+            }
+
+        .hd-valor {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 6px;
+        }
+
+        /* Ações — botões de status */
+        .hd-acoes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+            min-width: 150px;
+        }
+
+        .hd-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+            .hd-btn svg {
+                width: 13px;
+                height: 13px;
+                stroke: currentColor;
+                flex-shrink: 0;
+            }
+
+            /* Feito */
+            .hd-btn.feito {
+                background: #f0fdf4;
+                color: #15803d;
+                border: 1px solid #bbf7d0;
+            }
+
+                .hd-btn.feito:hover {
+                    background: #dcfce7;
+                }
+
+            .hd-btn.feito-ativo {
+                background: #16a34a;
+                color: #fff;
+                border: 1px solid #16a34a;
+            }
+
+            /* Pendente */
+            .hd-btn.pendente {
+                background: #fffbeb;
+                color: #92400e;
+                border: 1px solid #fde68a;
+            }
+
+                .hd-btn.pendente:hover {
+                    background: #fef3c7;
+                }
+
+            .hd-btn.pendente-ativo {
+                background: #d97706;
+                color: #fff;
+                border: 1px solid #d97706;
+            }
+
+            /* Cancelado */
+            .hd-btn.cancelado,
+            .hd-btn.naofeito {
+                background: transparent;
+                color: #b91c1c;
+                border: 1px solid #fecaca;
+            }
+
+                .hd-btn.cancelado:hover,
+                .hd-btn.naofeito:hover {
+                    background: #fef2f2;
+                }
+
+            .hd-btn.cancelado-ativo,
+            .hd-btn.naofeito-ativo {
+                background: #dc2626;
+                color: #fff;
+                border: 1px solid #dc2626;
+            }
+
+            .hd-btn.ver {
+                background: transparent;
+                color: #475569;
+                border: 1px solid #e2e8f0;
+            }
+
+                .hd-btn.ver:hover {
+                    background: #f1f5f9;
+                }
+
+        /* Empty */
+        .hd-empty {
+            background: #fff;
+            border-radius: 14px;
+            padding: 48px 24px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        }
+
+            .hd-empty svg {
+                width: 40px;
+                height: 40px;
+                stroke: #cbd5e1;
+                margin-bottom: 12px;
+            }
+
+            .hd-empty p {
+                color: #94a3b8;
+                font-size: 14px;
+                margin: 0;
+            }
+
+        .hd-contador {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+            .hd-contador strong {
+                color: #0f172a;
+            }
+
+        @@media (max-width:600px) {
+            .hd-card {
+                flex-direction: column;
+            }
+
+            .hd-acoes {
+                flex-direction: row;
+                flex-wrap: wrap;
+                min-width: unset;
+                width: 100%;
+            }
+
+            .hd-btn {
+                flex: 1;
+            }
+        }
+    </style>
+}
+
+@* ===== HEADER ===== *@
+<div class="hd-header">
+    <div class="hd-header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+        </svg>
+    </div>
+    <h1>Histórico de Documentos</h1>
+</div>
+
+@* ===== FILTROS ===== *@
+<form method="get" asp-action="Historico" asp-controller="Documentos" class="hd-filtros">
+    <div class="hd-fg">
+        <label>Buscar cliente</label>
+        <input type="text" name="busca" value="@ViewBag.Busca" placeholder="Nome do cliente..." />
+    </div>
+    <div class="hd-fg">
+        <label>Data</label>
+        <input type="date" name="data" value="@ViewBag.Data" />
+    </div>
+    <div class="hd-fg">
+        <label>Tipo</label>
+        <select name="tipo">
+            <option value="">Todos</option>
+            <option value="Orcamento" selected="@(ViewBag.Tipo == "Orcamento")">Orçamento</option>
+            <option value="Recibo" selected="@(ViewBag.Tipo == "Recibo")">Recibo</option>
+            <option value="Contrato" selected="@(ViewBag.Tipo == "Contrato")">Contrato</option>
+        </select>
+    </div>
+    <div class="hd-fg">
+        <label>Status</label>
+        <select name="status">
+            <option value="">Todos</option>
+            <option value="Feito" selected="@(ViewBag.Status == "Feito")">Feito</option>
+            <option value="Pendente" selected="@(ViewBag.Status == "Pendente")">Pendente</option>
+            <option value="Cancelado" selected="@(ViewBag.Status == "Cancelado")">Cancelado</option>
+        </select>
+    </div>
+    <button type="submit" class="hd-btn-filtrar">Filtrar</button>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Busca as string) ||
+         !string.IsNullOrWhiteSpace(ViewBag.Tipo as string) ||
+         !string.IsNullOrWhiteSpace(ViewBag.Status as string) ||
+         !string.IsNullOrWhiteSpace(ViewBag.Data as string))
+    {
+        <a href="@Url.Action("Historico", "Documentos")" class="hd-btn-limpar">Limpar</a>
+    }
+</form>
+
+@* ===== LISTA ===== *@
+@if (!Model.Any())
+{
+    <div class="hd-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+        </svg>
+        <p>Nenhum documento encontrado.</p>
+    </div>
+}
+else
+{
+    <p class="hd-contador"><strong>@Model.Count</strong> documento(s) encontrado(s)</p>
+
+    @foreach (var doc in Model)
+    {
+        var statusAtual = doc.Status ?? "Pendente";
+        var cls = statusAtual.ToLower();
+        var lbl = statusAtual;
+
+        <div class="hd-card @cls">
+            <div class="hd-card-body">
+                <div class="hd-card-top">
+                    <span class="hd-tipo">@doc.TipoDocumento</span>
+                    <span class="hd-badge @cls">@lbl</span>
+                </div>
+                <div class="hd-info">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                        <strong style="color:#0f172a;">@(doc.Cliente?.Nome ?? "—")</strong>
+                    </span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                        Criado em @doc.DataCriacao.ToString("dd/MM/yyyy 'às' HH:mm")
+                    </span>
+                    @if (doc.DataAprovacao.HasValue)
+                    {
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                            Feito em @doc.DataAprovacao.Value.ToString("dd/MM/yyyy 'às' HH:mm")
+                        </span>
+                    }
+                </div>
+                <div class="hd-valor">R$ @doc.Valor.ToString("N2", cultura)</div>
+            </div>
+            <div class="hd-acoes">
+            @if (doc.TipoDocumento == "Orcamento")
+            {
+                <form asp-controller="Documentos" asp-action="AtualizarStatus" asp-route-id="@doc.Id" method="post" class="w-100">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="status" value="Feito" />
+                    <button type="submit" class="hd-btn w-100 @(statusAtual == "Feito" ? "feito-ativo" : "feito")">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                        Feito
+                    </button>
+                </form>
+                <form asp-controller="Documentos" asp-action="AtualizarStatus" asp-route-id="@doc.Id" method="post" class="w-100">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="status" value="Pendente" />
+                    <button type="submit" class="hd-btn w-100 @(statusAtual == "Pendente" ? "pendente-ativo" : "pendente")">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="6" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                        Pendente
+                    </button>
+                </form>
+                <form asp-controller="Documentos" asp-action="AtualizarStatus" asp-route-id="@doc.Id" method="post" class="w-100">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="status" value="Cancelado" />
+                    <button type="submit" class="hd-btn w-100 @(statusAtual == "Cancelado" ? "cancelado-ativo" : "cancelado")">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                        Cancelado
+                    </button>
+                </form>
+            }
+                <button class="hd-btn ver w-100" onclick="verDocumento(@doc.Id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                    Ver
+                </button>
+            </div>
+        </div>
+    }
+}
+
+@* ===== MODAL VER ===== *@
+<div class="modal fade" id="modalDocumento" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div>
+                    <p class="text-muted mb-0" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Documentos</p>
+                    <h5 class="fw-bold mt-1" style="font-size:18px;color:#0f172a;">Conteúdo do Documento</h5>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body px-4 pt-3 pb-4" id="modalConteudo"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const documentos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(d => new
+            {
+                id = d.Id,
+                tipo = d.TipoDocumento,
+                cliente = d.Cliente != null ? d.Cliente.Nome : "—",
+                valor = d.Valor.ToString("N2"),
+                status = d.Status,
+                conteudo = d.ConteudoJson
+        })));
+
+        const rotulosStatus = {
+            'Feito': 'Feito',
+            'Pendente': 'Pendente',
+            'Cancelado': 'Cancelado'
+        };
+
+        function verDocumento(id) {
+            const doc = documentos.find(d => d.id === id);
+            if (!doc) return;
+            const status = rotulosStatus[doc.status] || doc.status;
+            let html = `<div style="display:grid;gap:8px;margin-bottom:16px;">
+                <p style="margin:0;font-size:14px;"><strong>Tipo:</strong> ${doc.tipo}</p>
+                <p style="margin:0;font-size:14px;"><strong>Cliente:</strong> ${doc.cliente}</p>
+                <p style="margin:0;font-size:14px;"><strong>Valor:</strong> R$ ${doc.valor}</p>
+                <p style="margin:0;font-size:14px;"><strong>Status:</strong> ${status}</p>
+            </div><hr>`;
+            try {
+                const d = JSON.parse(doc.conteudo);
+                html += '<table class="table table-sm table-bordered">';
+                for (const [k, v] of Object.entries(d)) {
+                    if (v) html += `<tr><th style="width:40%">${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}</th><td>${v}</td></tr>`;
+                }
+                html += '</table>';
+            } catch { html += `<pre class="bg-light p-2 rounded small">${doc.conteudo}</pre>`; }
+            document.getElementById('modalConteudo').innerHTML = html;
+            new bootstrap.Modal(document.getElementById('modalDocumento')).show();
+        }
+    </script>
+}

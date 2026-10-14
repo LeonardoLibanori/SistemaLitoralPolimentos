@@ -1,74 +1,528 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <link rel="manifest" href="~/manifest.json">
-    <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#1e293b">
     <meta name="mobile-web-app-capable" content="yes">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="/icon-192.png">
 
-    <script>
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then(reg => console.log('Service Worker registrado!', reg))
-              .catch(err => console.log('Erro ao registrar SW', err));
-          });
-        }
-    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SistemaLitoralPolimentos</title>
+    <title>@ViewData["Title"] - Litoral Polimentos</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaLitoralPolimentos.styles.css" asp-append-version="true" />
 
+    @RenderSection("Styles", required: false)
+
+    <style>
+            /* =====================================================
+               VARIÁVEIS
+            ===================================================== */
+            :root {
+                --sidebar-w:          240px;
+                --sidebar-bg:         #1e293b;
+                --sidebar-hover:      #334155;
+                --sidebar-active-bg:  #0f172a;
+                --sidebar-accent:     #22c55e;
+                --sidebar-text:       #cbd5e1;
+                --sidebar-muted:      #64748b;
+                --topbar-h:           56px;
+            }
+
+            /* =====================================================
+               BASE
+            ===================================================== */
+            *, *::before, *::after { box-sizing: border-box; }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                background: #f1f5f9;
+                min-height: 100vh;
+            }
+
+            /* =====================================================
+               SIDEBAR
+            ===================================================== */
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: var(--sidebar-w);
+                height: 100vh;
+                background: var(--sidebar-bg);
+                display: flex;
+                flex-direction: column;
+                z-index: 1040;
+                overflow-y: auto;
+                overflow-x: hidden;
+                transition: transform .28s cubic-bezier(.4,0,.2,1);
+            }
+
+            /* Mobile: escondida por padrão */
+            @@media (max-width: 991px) {
+                #sidebar                  { transform: translateX(-100%); }
+                #sidebar.sidebar-aberta   { transform: translateX(0); }
+            }
+
+            /* ----- Marca ----- */
+            .sb-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 20px 18px 16px;
+                border-bottom: 1px solid #334155;
+                text-decoration: none;
+            }
+
+            .sb-brand-icon {
+                width: 36px;
+                height: 36px;
+                background: var(--sidebar-accent);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            /* ícone simples via CSS (estrela/polimento) */
+            .sb-brand-icon::after {
+                content: '';
+                display: block;
+                width: 18px;
+                height: 18px;
+                background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M8 12l2.5 2.5L16 9'/%3E%3C/svg%3E") center/contain no-repeat;
+            }
+
+            .sb-brand-name {
+                font-size: 14px;
+                font-weight: 700;
+                color: #f1f5f9;
+                line-height: 1.25;
+            }
+
+            .sb-brand-sub {
+                font-size: 11px;
+                color: var(--sidebar-muted);
+                font-weight: 400;
+            }
+
+            /* ----- Nav ----- */
+            .sb-nav {
+                flex: 1;
+                padding: 10px 8px;
+                list-style: none;
+                margin: 0;
+            }
+
+            .sb-nav .nav-section {
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+                color: var(--sidebar-muted);
+                padding: 16px 10px 5px;
+            }
+
+            .sb-nav a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 9px 10px;
+                border-radius: 7px;
+                color: var(--sidebar-text);
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background .14s ease, color .14s ease;
+                margin-bottom: 1px;
+                position: relative;
+            }
+
+            .sb-nav a .sb-icon {
+                width: 18px;
+                height: 18px;
+                flex-shrink: 0;
+                opacity: .65;
+                transition: opacity .14s;
+            }
+
+            .sb-nav a:hover {
+                background: var(--sidebar-hover);
+                color: #f8fafc;
+            }
+
+            .sb-nav a:hover .sb-icon { opacity: 1; }
+
+            .sb-nav a.ativo {
+                background: var(--sidebar-active-bg);
+                color: #f8fafc;
+                border-left: 3px solid var(--sidebar-accent);
+                padding-left: 7px;
+            }
+
+            .sb-nav a.ativo .sb-icon { opacity: 1; }
+
+            /* Badge de notificação */
+            .sb-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 20px;
+                height: 20px;
+                padding: 0 5px;
+                background: #ef4444;
+                color: white;
+                border-radius: 10px;
+                font-size: 11px;
+                font-weight: 700;
+                margin-left: auto;
+                flex-shrink: 0;
+            }
+
+            /* ----- Rodapé (sair) ----- */
+            .sb-footer {
+                border-top: 1px solid #334155;
+                padding: 14px 16px;
+            }
+
+            .sb-logout {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                padding: 8px 12px;
+                background: transparent;
+                color: #f87171;
+                border: 1px solid rgba(239,68,68,.25);
+                border-radius: 7px;
+                font-size: 13px;
+                font-weight: 500;
+                text-decoration: none;
+                transition: background .14s;
+            }
+
+            .sb-logout:hover {
+                background: rgba(239,68,68,.12);
+                color: #fca5a5;
+            }
+
+            .sb-logout .sb-icon { opacity: 1; width: 15px; height: 15px; flex-shrink: 0; }
+
+            /* =====================================================
+               TOPBAR — visível só no mobile
+            ===================================================== */
+            #topbar {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                height: var(--topbar-h);
+                background: var(--sidebar-bg);
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 16px;
+                z-index: 1039;
+                border-bottom: 1px solid #334155;
+            }
+
+            @@media (max-width: 991px) { #topbar { display: flex; } }
+
+            .topbar-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: #f1f5f9;
+            }
+
+            #btnHamburger {
+                background: none;
+                border: none;
+                color: #f1f5f9;
+                cursor: pointer;
+                padding: 6px;
+                border-radius: 6px;
+                line-height: 0;
+            }
+
+            #btnHamburger:hover { background: #334155; }
+
+            /* =====================================================
+               OVERLAY — fecha sidebar ao clicar fora (mobile)
+            ===================================================== */
+            #sbOverlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,.45);
+                z-index: 1038;
+            }
+
+            #sbOverlay.ov-visivel { display: block; }
+
+            /* =====================================================
+               CONTEÚDO PRINCIPAL
+            ===================================================== */
+            #mainContent {
+                margin-left: var(--sidebar-w);
+                min-height: 100vh;
+                padding: 40px 52px;
+                transition: margin-left .28s cubic-bezier(.4,0,.2,1);
+            }
+
+            /* Limita largura máxima para não esticar em monitores ultrawide */
+            #mainContent > main {
+                max-width: 1100px;
+            }
+
+            @@media (max-width: 1280px) {
+                #mainContent { padding: 32px 36px; }
+            }
+
+            @@media (max-width: 991px) {
+                #mainContent {
+                    margin-left: 0;
+                    padding: calc(var(--topbar-h) + 24px) 20px 32px;
+                }
+            }
+
+            @@media (max-width: 576px) {
+                #mainContent { padding: calc(var(--topbar-h) + 16px) 14px 24px; }
+            }
+
+            /* =====================================================
+               TOASTS FLUTUANTES (TempData)
+            ===================================================== */
+            .lp-toast {
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                z-index: 9999;
+                min-width: 280px;
+                max-width: 400px;
+                animation: toastIn .3s ease;
+            }
+
+            @@keyframes toastIn {
+                from { opacity: 0; transform: translateY(12px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+    </style>
 </head>
 <body>
-    <header>
-        @if (Context.Session.GetString("Autenticado") == "true")
-        {
-            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Litoral Polimentos</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
 
-                    <div class="collapse navbar-collapse" id="mainNavbar">
-                        <ul class="navbar-nav mb-2 mb-lg-0">
-                            <li class="nav-item me-3">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Início</a>
-                            </li>
-                            <li class="nav-item me-3">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Historico">Histórico</a>
-                            </li>
-                        </ul>
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" asp-area="" asp-controller="Home" asp-action="Logout">Sair</a>
-                            </li>
-                        </ul>
-                        <!-- Documentos removido conforme solicitado; botões de navegação adicionais podem ser adicionados à direita -->
+    @{
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        var autenticado = User.Identity?.IsAuthenticated == true;
+    }
+
+    @if (autenticado)
+    {
+        /* ===== ÍCONES SVG inline (reutilizados como símbolos) ===== */
+        <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+            <!-- home -->
+            <symbol id="ico-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+            </symbol>
+            <!-- dashboard -->
+            <symbol id="ico-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+            </symbol>
+            <!-- doc -->
+            <symbol id="ico-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+            </symbol>
+            <!-- history (clock) -->
+            <symbol id="ico-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+            </symbol>
+            <!-- logout -->
+            <symbol id="ico-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </symbol>
+            <!-- hamburger -->
+            <symbol id="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </symbol>
+        </svg>
+
+        @* ===== TOPBAR MOBILE ===== *@
+        <div id="topbar">
+            <span class="topbar-title">Litoral Polimentos</span>
+            <button id="btnHamburger" onclick="sbToggle()" aria-label="Abrir menu">
+                <svg width="22" height="22"><use href="#ico-menu" /></svg>
+            </button>
+        </div>
+
+        @* ===== OVERLAY ===== *@
+        <div id="sbOverlay" onclick="sbFechar()"></div>
+
+        @* ===== SIDEBAR ===== *@
+        <nav id="sidebar" aria-label="Menu principal">
+
+            @* Marca *@
+            <a href="@Url.Action("Index", "Home")" class="sb-brand">
+                <div class="sb-brand-icon"></div>
+                <div>
+                    <div class="sb-brand-name">Litoral Polimentos</div>
+                    <div class="sb-brand-sub">Gestão de Serviços</div>
+                </div>
+            </a>
+
+            @* Navegação *@
+            <ul class="sb-nav">
+
+                <li>
+                    <a href="@Url.Action("Index", "Home")"
+                       class="@(action == "Index" && controller == "Home" ? "ativo" : "")">
+                        <svg class="sb-icon"><use href="#ico-doc" /></svg>
+                        Documentos
+                    </a>
+                </li>
+
+                <li>
+                    <a href="@Url.Action("Dashboard", "Home")"
+                       class="@(action == "Dashboard" ? "ativo" : "")">
+                        <svg class="sb-icon"><use href="#ico-dashboard" /></svg>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="@Url.Action("Historico", "Documentos")"
+                       class="@(controller == "Documentos" ? "ativo" : "")">
+                        <svg class="sb-icon"><use href="#ico-history" /></svg>
+                        Histórico
+                    </a>
+                </li>
+
+            </ul>
+
+            @* Rodapé — usuário + botão Sair *@
+            <div class="sb-footer">
+                @{
+                    var nomeUsuario = User.Identity?.Name ?? "Administrador";
+                    var inicial = nomeUsuario.Length > 0
+                        ? nomeUsuario[0].ToString().ToUpper()
+                        : "A";
+                }
+
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <div style="
+                        width:34px; height:34px;
+                        background: var(--sidebar-accent);
+                        border-radius:50%;
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:14px; font-weight:700; color:#fff;
+                        flex-shrink:0;">
+                        @inicial
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:13px; font-weight:600; color:#f1f5f9;
+                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            Olá, @nomeUsuario
+                        </div>
+                        <div style="font-size:11px; color:var(--sidebar-muted);">
+                            Administrador
+                        </div>
                     </div>
                 </div>
-            </nav>
-        }
-    </header>
-    <div class="container">
+
+                <a href="@Url.Action("Logout", "Home")" class="sb-logout">
+                    <svg class="sb-icon"><use href="#ico-logout" /></svg>
+                    Sair
+                </a>
+            </div>
+
+        </nav>
+    }
+
+    @* ===== CONTEÚDO PRINCIPAL ===== *@
+    <div id="mainContent">
         <main role="main" class="pb-3">
+
+            @* Toasts de feedback *@
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="lp-toast">
+                    <div class="alert alert-success alert-dismissible shadow-sm border-0 mb-0">
+                        <strong>✓</strong> @TempData["Sucesso"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            }
+            @if (TempData["Aviso"] != null)
+            {
+                <div class="lp-toast">
+                    <div class="alert alert-warning alert-dismissible shadow-sm border-0 mb-0">
+                        <strong>⚠</strong> @TempData["Aviso"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>
-
-  
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        /* =====================================================
+        SIDEBAR — toggle e fechamento
+        ===================================================== */
+        function sbToggle() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sbOverlay');
+            if (!sb || !ov) return;
+            const aberta = sb.classList.toggle('sidebar-aberta');
+            ov.classList.toggle('ov-visivel', aberta);
+            document.body.style.overflow = aberta ? 'hidden' : '';
+        }
+
+        function sbFechar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sbOverlay');
+            if (!sb || !ov) return;
+            sb.classList.remove('sidebar-aberta');
+            ov.classList.remove('ov-visivel');
+            document.body.style.overflow = '';
+        }
+
+        // Fecha ao redimensionar para desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 991) sbFechar();
+        });
+
+        /* =====================================================
+        AUTO-FECHAR TOASTS após 5 s
+        ===================================================== */
+        setTimeout(() => {
+            document.querySelectorAll('.lp-toast').forEach(t => {
+                t.style.transition = 'opacity .4s';
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 400);
+            });
+        }, 5000);
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

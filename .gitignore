@@ -361,3 +361,16 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Segurança — nunca versionar
+appsettings.json
+appsettings.*.json
+google-credentials.json
+
+# Banco de dados local
+*.db
+*.db-shm
+*.db-wal
+
+# Histórico legado
+historico.json
