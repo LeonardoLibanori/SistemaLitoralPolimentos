@@ -29,16 +29,35 @@ namespace SistemaLitoralPolimentos.Controllers
 
         public async Task<IActionResult> Dashboard()
         {
-            var orcamentos = _db.Documentos.AsNoTracking().Where(d => d.TipoDocumento == "Orcamento");
+            // Remove duplicados (mesma lógica do Histórico): mantém apenas o
+            // registro mais recente de cada ConteudoJson para as contagens
+            var documentos = await _db.Documentos
+                .AsNoTracking()
+                .OrderByDescending(d => d.DataCriacao)
+                .ToListAsync();
 
-            var orcamentosFeitos = orcamentos.Where(d => d.Status == "Feito");
-            ViewBag.ValorFeito = await orcamentosFeitos.Select(d => (double?)d.Valor).SumAsync() ?? 0;
-            ViewBag.TotalFeitos = await orcamentosFeitos.CountAsync();
+            documentos = documentos
+                .GroupBy(d => string.IsNullOrWhiteSpace(d.ConteudoJson)
+                    ? $"unico_{d.Id}"
+                    : d.ConteudoJson)
+                .Select(g => g.First())
+                .ToList();
+
+            var orcamentos = documentos
+                .Where(d => d.TipoDocumento == "Orcamento")
+                .ToList();
+
+            var orcamentosFeitos = orcamentos
+                .Where(d => d.Status == "Feito")
+                .ToList();
+
+            ViewBag.ValorFeito = orcamentosFeitos.Sum(d => (double)d.Valor);
+            ViewBag.TotalFeitos = orcamentosFeitos.Count;
             ViewBag.Feitos = ViewBag.TotalFeitos;
 
-            ViewBag.TotalDocumentos = await _db.Documentos.CountAsync();
-            ViewBag.Pendentes = await orcamentos.CountAsync(d => d.Status == "Pendente");
-            ViewBag.Cancelados = await orcamentos.CountAsync(d => d.Status == "Cancelado");
+            ViewBag.TotalDocumentos = documentos.Count;
+            ViewBag.Pendentes = orcamentos.Count(d => d.Status == "Pendente");
+            ViewBag.Cancelados = orcamentos.Count(d => d.Status == "Cancelado");
 
             return View();
         }
@@ -151,8 +170,18 @@ namespace SistemaLitoralPolimentos.Controllers
         public async Task<IActionResult> BuscarHistorico()
         {
             var documentos = await _db.Documentos
+                .AsNoTracking()
                 .Include(d => d.Cliente)
                 .OrderByDescending(d => d.DataCriacao)
+                .ToListAsync();
+
+            // Remove duplicados (mesma lógica do Histórico):
+            // mantém apenas o registro mais recente de cada ConteudoJson
+            var distintos = documentos
+                .GroupBy(d => string.IsNullOrWhiteSpace(d.ConteudoJson)
+                    ? $"unico_{d.Id}"
+                    : d.ConteudoJson)
+                .Select(g => g.First())
                 .Select(d => new
                 {
                     id = d.Id,
@@ -166,9 +195,9 @@ namespace SistemaLitoralPolimentos.Controllers
                         : null,
                     conteudoJson = d.ConteudoJson
                 })
-                .ToListAsync();
+                .ToList();
 
-            return Ok(documentos);
+            return Ok(distintos);
         }
 
         [HttpPost]
@@ -178,6 +207,24 @@ namespace SistemaLitoralPolimentos.Controllers
         {
             if (request == null || string.IsNullOrWhiteSpace(request.TipoDocumento))
                 return BadRequest(new { erro = "Dados inválidos." });
+
+            // Idempotência: se o mesmo documento (tipo + conteúdo) acabou de ser
+            // salvo — duplo clique ou reenvio acidental — não cria registro novo
+            var conteudo = request.ConteudoJson ?? "{}";
+            var janelaDuplicidade = DateTime.Now.AddSeconds(-5);
+            var existente = await _db.Documentos
+                .Where(d => d.TipoDocumento == request.TipoDocumento
+                         && d.ConteudoJson == conteudo
+                         && d.DataCriacao >= janelaDuplicidade)
+                .OrderByDescending(d => d.Id)
+                .FirstOrDefaultAsync();
+
+            if (existente != null)
+                return Ok(new
+                {
+                    id = existente.Id,
+                    mensagem = "Documento duplicado ignorado."
+                });
 
             var cliente = await _db.Clientes
                 .FirstOrDefaultAsync(c => c.Nome == request.NomeCliente);

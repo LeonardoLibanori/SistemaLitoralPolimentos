@@ -273,10 +273,29 @@ async function gerarPdfOrcamento() {
 }
 
 // ================= BOTÕES =================
+// Trava anti duplo clique: desabilita o botão enquanto o PDF é gerado e
+// salvo no banco, evitando registros duplicados no histórico.
+let _gerandoPdf = false;
+
+async function gerarPdfComTrava(botao, gerarFn) {
+    if (_gerandoPdf || botao.disabled) return;
+    _gerandoPdf = true;
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = '⏳ Gerando...';
+    try {
+        await gerarFn();
+    } finally {
+        botao.disabled = false;
+        botao.textContent = textoOriginal;
+        _gerandoPdf = false;
+    }
+}
+
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'btnPdf') gerarPdfOrcamento();
-    if (e.target.id === 'btnPdfRecibo') gerarPdfRecibo();
-    if (e.target.id === 'btnContratoPdf') gerarPdfContrato();
+    if (e.target.id === 'btnPdf') gerarPdfComTrava(e.target, gerarPdfOrcamento);
+    if (e.target.id === 'btnPdfRecibo') gerarPdfComTrava(e.target, gerarPdfRecibo);
+    if (e.target.id === 'btnContratoPdf') gerarPdfComTrava(e.target, gerarPdfContrato);
     if (e.target.id === 'btnShare') shareOrcamento();
     if (e.target.id === 'btnShareRecibo') shareRecibo();
     if (e.target.id === 'btnShareContrato') shareContrato();
