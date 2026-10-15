@@ -345,6 +345,136 @@
                 color: #0f172a;
             }
 
+        /* ===== MODAL CONFIRMAR EXCLUSÃO ===== */
+        .modal-excluir .modal-content {
+            border: 0;
+            border-radius: 18px;
+            box-shadow: 0 24px 60px rgba(15,23,42,.25);
+            overflow: hidden;
+        }
+
+        .modal-excluir .mx-body {
+            padding: 34px 28px 8px;
+            text-align: center;
+        }
+
+        .mx-icon {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 18px;
+            background: #fef2f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: mxPop .35s cubic-bezier(.34,1.56,.64,1);
+        }
+
+            .mx-icon svg {
+                width: 34px;
+                height: 34px;
+                stroke: #dc2626;
+            }
+
+        @@keyframes mxPop {
+            from { transform: scale(.5); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-excluir .mx-titulo {
+            font-size: 19px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 10px;
+        }
+
+        .mx-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.55;
+            margin: 0 0 16px;
+            padding: 0 6px;
+        }
+
+            .mx-desc strong {
+                color: #334155;
+            }
+
+        .mx-aviso {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #b45309;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+        }
+
+            .mx-aviso svg {
+                width: 15px;
+                height: 15px;
+                stroke: #d97706;
+                flex-shrink: 0;
+            }
+
+        .modal-excluir .mx-acoes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 22px 24px;
+        }
+
+        .mx-btn {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background .15s, transform .1s;
+        }
+
+            .mx-btn:active {
+                transform: scale(.98);
+            }
+
+            .mx-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+
+        .mx-btn-cancelar {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+            .mx-btn-cancelar:hover {
+                background: #e2e8f0;
+            }
+
+        .mx-btn-excluir {
+            background: #dc2626;
+            color: #fff;
+        }
+
+            .mx-btn-excluir:hover {
+                background: #b91c1c;
+            }
+
+            .mx-btn-excluir:disabled {
+                opacity: .7;
+                cursor: wait;
+            }
+
         @@media (max-width:600px) {
             .hd-card {
                 flex-direction: column;
@@ -496,7 +626,8 @@ else
                     Ver
                 </button>
                 <form asp-controller="Documentos" asp-action="Deletar" asp-route-id="@doc.Id" method="post" class="w-100"
-                      onsubmit="return confirm('Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.');">
+                      onsubmit="return abrirConfirmacaoExclusao(event, this)"
+                      data-tipo="@(doc.TipoDocumento == "Orcamento" ? "Orçamento" : doc.TipoDocumento)" data-cliente="@(doc.Cliente?.Nome ?? "—")">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="hd-btn excluir w-100">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
@@ -520,6 +651,32 @@ else
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body px-4 pt-3 pb-4" id="modalConteudo"></div>
+        </div>
+    </div>
+</div>
+
+@* ===== MODAL CONFIRMAR EXCLUSÃO ===== *@
+<div class="modal fade modal-excluir" id="modalConfirmarExclusao" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content">
+            <div class="mx-body">
+                <div class="mx-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
+                </div>
+                <h5 class="mx-titulo">Excluir documento?</h5>
+                <p class="mx-desc" id="mxDescricao"></p>
+                <span class="mx-aviso">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                    Esta ação não pode ser desfeita
+                </span>
+            </div>
+            <div class="mx-acoes">
+                <button type="button" class="mx-btn mx-btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="mx-btn mx-btn-excluir" id="mxBtnExcluir">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                    Sim, excluir
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -563,5 +720,38 @@ else
             document.getElementById('modalConteudo').innerHTML = html;
             new bootstrap.Modal(document.getElementById('modalDocumento')).show();
         }
+
+        /* ===== CONFIRMAÇÃO DE EXCLUSÃO (modal personalizado) ===== */
+        let formExclusaoPendente = null;
+
+        function abrirConfirmacaoExclusao(event, form) {
+            event.preventDefault();
+            formExclusaoPendente = form;
+            const escapar = (texto) => {
+                const div = document.createElement('div');
+                div.textContent = texto;
+                return div.innerHTML;
+            };
+            const tipo = escapar(form.dataset.tipo || 'documento');
+            const cliente = escapar(form.dataset.cliente || '—');
+            document.getElementById('mxDescricao').innerHTML =
+                `O <strong>${tipo}</strong> de <strong>${cliente}</strong> será removido permanentemente do histórico.`;
+            const btnExcluir = document.getElementById('mxBtnExcluir');
+            btnExcluir.disabled = false;
+            new bootstrap.Modal(document.getElementById('modalConfirmarExclusao')).show();
+            return false;
+        }
+
+        document.getElementById('mxBtnExcluir').addEventListener('click', function () {
+            if (!formExclusaoPendente) return;
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Excluindo…';
+            formExclusaoPendente.submit();
+        });
+
+        // Limpa a referência ao fechar o modal sem confirmar
+        document.getElementById('modalConfirmarExclusao').addEventListener('hidden.bs.modal', function () {
+            formExclusaoPendente = null;
+        });
     </script>
 }
