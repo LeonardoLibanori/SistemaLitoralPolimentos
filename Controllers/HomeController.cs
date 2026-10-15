@@ -271,7 +271,11 @@ namespace SistemaLitoralPolimentos.Controllers
                 DataCriacao = DateTime.Now,
                 Valor = request.Valor,
                 ConteudoJson = request.ConteudoJson ?? "{}",
-                Status = "Pendente"
+                // Recibo e Contrato não têm ciclo de aprovação: já nascem
+                // concluídos. Só Orçamento usa Pendente/Feito/Cancelado.
+                Status = request.TipoDocumento is "Recibo" or "Contrato"
+                    ? "Feito"
+                    : "Pendente"
             };
 
             _db.Documentos.Add(documento);

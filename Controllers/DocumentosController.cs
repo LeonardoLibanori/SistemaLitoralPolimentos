@@ -22,6 +22,18 @@ namespace SistemaLitoralPolimentos.Controllers
         public async Task<IActionResult> Historico(
             string? tipo, string? status, string? busca, string? data)
         {
+            // Recibo e Contrato não têm ciclo de aprovação: só Orçamento
+            // usa Pendente/Cancelado. Se o filtro de status for Pendente ou
+            // Cancelado sem tipo definido, restringe a Orçamentos; se o tipo
+            // for Recibo/Contrato com esses status, ignora o status.
+            if (status is "Pendente" or "Cancelado")
+            {
+                if (string.IsNullOrWhiteSpace(tipo))
+                    tipo = "Orcamento";
+                else if (tipo is "Recibo" or "Contrato")
+                    status = null;
+            }
+
             ViewBag.Tipo = tipo;
             ViewBag.Status = status;
             ViewBag.Busca = busca;
@@ -72,6 +84,11 @@ namespace SistemaLitoralPolimentos.Controllers
         {
             var documento = await _db.Documentos.FindAsync(id);
             if (documento == null) return NotFound();
+
+            // Recibo e Contrato não têm ciclo de aprovação: o status deles
+            // é sempre "Feito" e não pode ser alterado.
+            if (documento.TipoDocumento is "Recibo" or "Contrato")
+                return BadRequest(new { erro = "Recibo e Contrato não possuem status." });
 
             var statusValidos = new[] { "Feito", "Pendente", "Cancelado" };
             if (!statusValidos.Contains(status)) return BadRequest();
