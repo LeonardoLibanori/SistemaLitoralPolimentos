@@ -303,6 +303,16 @@
                     background: #f1f5f9;
                 }
 
+            .hd-btn.excluir {
+                background: #fef2f2;
+                color: #b91c1c;
+                border: 1px solid #fecaca;
+            }
+
+                .hd-btn.excluir:hover {
+                    background: #fee2e2;
+                }
+
         /* Empty */
         .hd-empty {
             background: #fff;
@@ -485,6 +495,14 @@ else
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                     Ver
                 </button>
+                <form asp-controller="Documentos" asp-action="Deletar" asp-route-id="@doc.Id" method="post" class="w-100"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="hd-btn excluir w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                        Excluir
+                    </button>
+                </form>
             </div>
         </div>
     }

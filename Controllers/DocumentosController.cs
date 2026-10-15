@@ -50,6 +50,15 @@ namespace SistemaLitoralPolimentos.Controllers
                 .OrderByDescending(d => d.DataCriacao)
                 .ToListAsync();
 
+            // Remove duplicados (gerados por duplo clique ao criar o PDF):
+            // mantém apenas o registro mais recente de cada ConteudoJson
+            lista = lista
+                .GroupBy(d => string.IsNullOrWhiteSpace(d.ConteudoJson)
+                    ? $"unico_{d.Id}"
+                    : d.ConteudoJson)
+                .Select(g => g.First())
+                .ToList();
+
             return View(lista);
         }
 
@@ -76,6 +85,34 @@ namespace SistemaLitoralPolimentos.Controllers
 
             await _db.SaveChangesAsync();
 
+            return RedirectToAction(nameof(Historico));
+        }
+
+        // =====================================================
+        // DELETAR DOCUMENTO
+        // =====================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deletar(int id)
+        {
+            var documento = await _db.Documentos.FindAsync(id);
+            if (documento == null)
+                return NotFound();
+
+            _db.Documentos.Remove(documento);
+            await _db.SaveChangesAsync();
+
+            // Requisição AJAX (fetch) recebe JSON; formulário clássico volta ao histórico
+            if (string.Equals(
+                Request.Headers["X-Requested-With"],
+                "XMLHttpRequest",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return Ok(new { mensagem = "Documento excluído com sucesso." });
+            }
+
+            TempData["Sucesso"] = "Documento excluído com sucesso.";
             return RedirectToAction(nameof(Historico));
         }
     }
