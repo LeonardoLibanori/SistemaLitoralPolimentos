@@ -510,6 +510,10 @@
 
 @* ===== FILTROS ===== *@
 <form method="get" asp-action="Historico" asp-controller="Documentos" class="hd-filtros">
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Periodo as string))
+    {
+        <input type="hidden" name="periodo" value="@ViewBag.Periodo" />
+    }
     <div class="hd-fg">
         <label>Buscar cliente</label>
         <input type="text" name="busca" value="@ViewBag.Busca" placeholder="Nome do cliente..." />
@@ -540,11 +544,27 @@
     @if (!string.IsNullOrWhiteSpace(ViewBag.Busca as string) ||
          !string.IsNullOrWhiteSpace(ViewBag.Tipo as string) ||
          !string.IsNullOrWhiteSpace(ViewBag.Status as string) ||
-         !string.IsNullOrWhiteSpace(ViewBag.Data as string))
+         !string.IsNullOrWhiteSpace(ViewBag.Data as string) ||
+         !string.IsNullOrWhiteSpace(ViewBag.Periodo as string))
     {
         <a href="@Url.Action("Historico", "Documentos")" class="hd-btn-limpar">Limpar</a>
     }
 </form>
+
+@if (ViewBag.PeriodoInicio is DateTime periodoInicio)
+{
+    var rotulo = (ViewBag.Periodo as string) switch
+    {
+        "semana" => "desta semana",
+        "ano" => "deste ano",
+        _ => "deste mês"
+    };
+    <p class="hd-contador">
+        Mostrando documentos @rotulo
+        (desde <strong>@periodoInicio.ToString("dd/MM/yyyy")</strong>).
+        <a href="@Url.Action("Historico", "Documentos", new { tipo = (string?)ViewBag.Tipo, status = (string?)ViewBag.Status, busca = (string?)ViewBag.Busca, data = (string?)ViewBag.Data })">Ver tudo</a>
+    </p>
+}
 
 @* ===== LISTA ===== *@
 @if (!Model.Any())

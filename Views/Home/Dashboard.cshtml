@@ -277,7 +277,7 @@
 @* ===== CARDS DE DOCUMENTOS (4 colunas) ===== *@
 <div class="db-grid-4">
 
-    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Pendente" })"
+    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Pendente", periodo = periodo })"
        class="db-card amarelo">
         <div class="db-card-inner">
             <div class="db-card-body">
@@ -294,7 +294,7 @@
         </div>
     </a>
 
-    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Feito" })"
+    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Feito", periodo = periodo })"
        class="db-card verde">
         <div class="db-card-inner">
             <div class="db-card-body">
@@ -311,7 +311,7 @@
         </div>
     </a>
 
-    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Cancelado" })"
+    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Cancelado", periodo = periodo })"
        class="db-card vermelho">
         <div class="db-card-inner">
             <div class="db-card-body">
@@ -329,7 +329,7 @@
         </div>
     </a>
 
-    <a href="@Url.Action("Historico", "Documentos")"
+    <a href="@Url.Action("Historico", "Documentos", new { periodo = periodo })"
        class="db-card azul">
         <div class="db-card-inner">
             <div class="db-card-body">
@@ -353,7 +353,7 @@
 @* ===== CARD FINANCEIRO ===== *@
 <div class="db-grid-2">
 
-    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Feito" })"
+    <a href="@Url.Action("Historico", "Documentos", new { tipo = "Orcamento", status = "Feito", periodo = periodo })"
        class="db-card teal db-card-wide">
         <div class="db-card-inner">
             <div class="db-card-icon" style="width:52px;height:52px;">

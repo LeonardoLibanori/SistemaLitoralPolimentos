@@ -20,7 +20,7 @@ namespace SistemaLitoralPolimentos.Controllers
         // =====================================================
 
         public async Task<IActionResult> Historico(
-            string? tipo, string? status, string? busca, string? data)
+            string? tipo, string? status, string? busca, string? data, string? periodo)
         {
             // Recibo e Contrato não têm ciclo de aprovação: só Orçamento
             // usa Pendente/Cancelado. Se o filtro de status for Pendente ou
@@ -34,10 +34,28 @@ namespace SistemaLitoralPolimentos.Controllers
                     status = null;
             }
 
+            // Período vindo do Dashboard (semana/mes/ano): filtra documentos
+            // criados desde o início do período corrente. A data exata tem
+            // precedência quando preenchida.
+            periodo = periodo is "semana" or "mes" or "ano" ? periodo : null;
+            DateTime? periodoInicio = null;
+            if (periodo != null && string.IsNullOrWhiteSpace(data))
+            {
+                var hoje = DateTime.Today;
+                periodoInicio = periodo switch
+                {
+                    "semana" => hoje.AddDays(-(((int)hoje.DayOfWeek + 6) % 7)), // segunda-feira
+                    "ano" => new DateTime(hoje.Year, 1, 1),
+                    _ => new DateTime(hoje.Year, hoje.Month, 1)
+                };
+            }
+
             ViewBag.Tipo = tipo;
             ViewBag.Status = status;
             ViewBag.Busca = busca;
             ViewBag.Data = data;
+            ViewBag.Periodo = periodo;
+            ViewBag.PeriodoInicio = periodoInicio;
 
             var docs = _db.Documentos
                 .AsNoTracking()
@@ -57,6 +75,8 @@ namespace SistemaLitoralPolimentos.Controllers
             if (!string.IsNullOrWhiteSpace(data) &&
                 DateTime.TryParse(data, out var dataFiltro))
                 docs = docs.Where(d => d.DataCriacao.Date == dataFiltro.Date);
+            else if (periodoInicio.HasValue)
+                docs = docs.Where(d => d.DataCriacao >= periodoInicio.Value);
 
             var lista = await docs
                 .OrderByDescending(d => d.DataCriacao)
