@@ -5,6 +5,14 @@ using SistemaLitoralPolimentos.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Em produção os cookies usam Secure=Always (corrige login via PWA instalado, commit 5477f00).
+// Em Development isso quebra o perfil "http" do dotnet run: o antiforgery lança exceção quando
+// SecurePolicy=Always e a requisição não é SSL. SameAsRequest mantém Secure nas requisições
+// HTTPS (localhost:7034) e evita a exceção em HTTP puro (localhost:5057).
+var cookieSecurePolicy = builder.Environment.IsDevelopment()
+    ? CookieSecurePolicy.SameAsRequest
+    : CookieSecurePolicy.Always;
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options =>
 {
@@ -23,7 +31,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SecurePolicy = cookieSecurePolicy;
     });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -38,7 +46,7 @@ builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = cookieSecurePolicy;
 });
 
 var app = builder.Build();
