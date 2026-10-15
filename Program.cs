@@ -59,6 +59,11 @@ using (var scope = app.Services.CreateScope())
     // Normaliza status legado: "Aprovado" passa a ser "Feito"
     await db.Database.ExecuteSqlRawAsync(
         "UPDATE \"Documentos\" SET \"Status\" = 'Feito' WHERE \"Status\" = 'Aprovado'");
+
+    // Recibo e Contrato não têm ciclo Pendente/Cancelado: normaliza registros
+    // antigos para "Feito" (aplica-se ao banco já existente no deploy).
+    await db.Database.ExecuteSqlRawAsync(
+        "UPDATE \"Documentos\" SET \"Status\" = 'Feito', \"DataAprovacao\" = COALESCE(\"DataAprovacao\", \"DataCriacao\") WHERE \"TipoDocumento\" IN ('Recibo', 'Contrato') AND \"Status\" <> 'Feito'");
 }
 
 if (!app.Environment.IsDevelopment())
