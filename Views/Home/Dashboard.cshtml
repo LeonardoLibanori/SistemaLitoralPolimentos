@@ -7,7 +7,9 @@
     int cancelados = ViewBag.Cancelados ?? 0;
     decimal valor = (decimal)(ViewBag.ValorFeito ?? 0);
 
-    var cultura = new System.Globalization.CultureInfo("pt-BR");
+    string periodo = ViewBag.Periodo as string ?? "mes";
+    DateTime periodoInicio = (DateTime)ViewBag.PeriodoInicio;
+    DateTime periodoFim = (DateTime)ViewBag.PeriodoFim;
 }
 
 @section Styles {
@@ -61,6 +63,44 @@
             color: #94a3b8;
             font-weight: 500;
         }
+
+        /* ----- Seletor de período (Semana / Mês / Ano) ----- */
+        .db-periodo {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .db-periodo-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px; /* alvo de toque confortável no celular */
+            padding: 8px 4px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+        }
+
+            .db-periodo-btn.ativo {
+                background: #7c3aed;
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(124,58,237,.3);
+            }
+
+            .db-periodo-btn:not(.ativo):hover {
+                background: #e2e8f0;
+                color: #334155;
+            }
 
         /* ----- Grid de cards ----- */
         .db-grid-4 {
@@ -223,19 +263,21 @@
         </div>
         <h1 class="db-header">Dashboard</h1>
     </div>
-    @{
-        var dataBrasil = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
-            DateTime.UtcNow,
-            "E. South America Standard Time"
-        );
-    }
 
     <span class="db-date">
-        @cultura.TextInfo.ToTitleCase(
-            dataBrasil.ToString("dddd, dd 'de' MMMM 'de' yyyy", cultura)
-        )
+        @periodoInicio.ToString("dd/MM/yyyy") – @periodoFim.ToString("dd/MM/yyyy")
     </span>
 </div>
+
+@* ===== SELETOR DE PERÍODO (Semana / Mês / Ano) ===== *@
+<nav class="db-periodo" aria-label="Selecionar período">
+    <a class="db-periodo-btn @(periodo == "semana" ? "ativo" : "")"
+       href="@Url.Action("Dashboard", "Home", new { periodo = "semana" })">Semana</a>
+    <a class="db-periodo-btn @(periodo == "mes" ? "ativo" : "")"
+       href="@Url.Action("Dashboard", "Home", new { periodo = "mes" })">Mês</a>
+    <a class="db-periodo-btn @(periodo == "ano" ? "ativo" : "")"
+       href="@Url.Action("Dashboard", "Home", new { periodo = "ano" })">Ano</a>
+</nav>
 
 @* ===== CARDS DE DOCUMENTOS (4 colunas) ===== *@
 <div class="db-grid-4">
@@ -332,7 +374,7 @@
                     R$ @valor.ToString("N2")
                 </div>
                 <div class="db-card-label">
-                    @feitos documento(s) feito(s)
+                    @feitos documento(s) feito(s) — @(periodo == "semana" ? "na semana" : periodo == "mes" ? "no mês" : "no ano")
                 </div>
             </div>
         </div>    </a>

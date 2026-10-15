@@ -27,8 +27,20 @@ namespace SistemaLitoralPolimentos.Controllers
 
         public IActionResult Index() => View();
 
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(string? periodo = null)
         {
+            // Seletor de período do dashboard: semana (corrente, seg–dom),
+            // mês (corrente) ou ano (corrente). Padrão: mês.
+            periodo = periodo is "semana" or "mes" or "ano" ? periodo : "mes";
+
+            var hoje = DateTime.Today;
+            var inicio = periodo switch
+            {
+                "semana" => hoje.AddDays(-(((int)hoje.DayOfWeek + 6) % 7)), // segunda-feira
+                "ano" => new DateTime(hoje.Year, 1, 1),
+                _ => new DateTime(hoje.Year, hoje.Month, 1)
+            };
+
             // Remove duplicados (mesma lógica do Histórico): mantém apenas o
             // registro mais recente de cada ConteudoJson para as contagens
             var documentos = await _db.Documentos
@@ -43,7 +55,13 @@ namespace SistemaLitoralPolimentos.Controllers
                 .Select(g => g.First())
                 .ToList();
 
-            var orcamentos = documentos
+            // Contagens e faturamento restritos ao período selecionado
+            // (filtro por DataCriacao, mesmo critério do Histórico)
+            var noPeriodo = documentos
+                .Where(d => d.DataCriacao >= inicio)
+                .ToList();
+
+            var orcamentos = noPeriodo
                 .Where(d => d.TipoDocumento == "Orcamento")
                 .ToList();
 
@@ -55,9 +73,13 @@ namespace SistemaLitoralPolimentos.Controllers
             ViewBag.TotalFeitos = orcamentosFeitos.Count;
             ViewBag.Feitos = ViewBag.TotalFeitos;
 
-            ViewBag.TotalDocumentos = documentos.Count;
+            ViewBag.TotalDocumentos = noPeriodo.Count;
             ViewBag.Pendentes = orcamentos.Count(d => d.Status == "Pendente");
             ViewBag.Cancelados = orcamentos.Count(d => d.Status == "Cancelado");
+
+            ViewBag.Periodo = periodo;
+            ViewBag.PeriodoInicio = inicio;
+            ViewBag.PeriodoFim = hoje;
 
             return View();
         }
