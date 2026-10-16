@@ -297,7 +297,17 @@ namespace SistemaLitoralPolimentos.Controllers
         {
             var cfg = _config.GetSection("Empresa").Get<EmpresaConfig>();
             if (cfg == null) return NotFound();
-            return Ok(cfg);
+
+            // Retorna apenas os campos estritamente necessários para os documentos
+            // (sem dados bancários completos, telefone, endereço completo e CPF)
+            return Ok(new
+            {
+                cfg.Nome,
+                cfg.Fantasia,
+                Cnpj = cfg.Cnpj,
+                Email = cfg.Email,
+                ValidadeOrcamentoDias = cfg.ValidadeOrcamentoDias
+            });
         }
     }
 
