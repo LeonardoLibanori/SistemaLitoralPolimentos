@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'litoral-v3';
+﻿const CACHE_NAME = 'litoral-v4';
 const assets = [
     '/',
     '/js/site.js',

@@ -641,9 +641,9 @@ else
                     </button>
                 </form>
             }
-                <button class="hd-btn ver w-100" onclick="verDocumento(@doc.Id)">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-                    Ver
+                <button class="hd-btn ver w-100" onclick="verDocumento(@doc.Id)" style="background:linear-gradient(135deg,#2563eb,#3b82f6);border:none;color:#fff;font-weight:600;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span style="letter-spacing:.3px;">Visualizar</span>
                 </button>
                 <form asp-controller="Documentos" asp-action="Deletar" asp-route-id="@doc.Id" method="post" class="w-100"
                       onsubmit="return abrirConfirmacaoExclusao(event, this)"
@@ -661,16 +661,19 @@ else
 
 @* ===== MODAL VER ===== *@
 <div class="modal fade" id="modalDocumento" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
-            <div class="modal-header border-0 pb-0 pt-4 px-4">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-lg-down">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px; overflow:hidden;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
                 <div>
-                    <p class="text-muted mb-0" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Documentos</p>
-                    <h5 class="fw-bold mt-1" style="font-size:18px;color:#0f172a;">Conteúdo do Documento</h5>
+                    <p class="text-muted mb-0" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;">Litoral Polimentos</p>
+                    <h4 class="fw-bold mt-1 mb-0" style="font-size:20px;color:#fff;">Detalhes do Documento</h4>
                 </div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" style="opacity:0.8;"></button>
             </div>
-            <div class="modal-body px-4 pt-3 pb-4" id="modalConteudo"></div>
+            <div class="modal-body px-4 pt-3 pb-4" id="modalConteudo" style="max-height:70vh;overflow-y:auto;"></div>
+            <div class="modal-footer border-0 pt-0 pb-4 px-4" style="background:#f8fafc;border-top:1px solid #e2e8f0;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;padding:10px 20px;font-weight:500;">Fechar</button>
+            </div>
         </div>
     </div>
 </div>
@@ -710,6 +713,7 @@ else
                 cliente = d.Cliente != null ? d.Cliente.Nome : "—",
                 valor = d.Valor.ToString("N2"),
                 status = d.Status,
+                data = d.DataCriacao.ToString("dd/MM/yyyy HH:mm"),
                 conteudo = d.ConteudoJson
         })));
 
@@ -720,23 +724,157 @@ else
         };
 
         function verDocumento(id) {
-            const doc = documentos.find(d => d.id === id);
-            if (!doc) return;
+            // Primeiro tenta usar dados já carregados (evita redirect se sessão expirada)
+            let doc = documentos.find(d => d.id === id);
+            if (doc) {
+                abrirModalVer(doc);
+                return;
+            }
+            // Fallback: busca fresco do servidor
+            fetch('/Home/BuscarHistorico')
+                .then(r => {
+                    if (!r.ok) throw new Error('Não autenticado');
+                    return r.json();
+                })
+                .then(historico => {
+                    const all = [...(historico.orcamentos||[]), ...(historico.recibos||[]), ...(historico.contratos||[])];
+                    doc = all.find(d => d.id === id);
+                    if (doc) abrirModalVer(doc);
+                })
+                .catch(e => console.error('Erro ao buscar documento:', e));
+        }
+
+        function abrirModalVer(doc) {
             const status = rotulosStatus[doc.status] || doc.status;
-            let html = `<div style="display:grid;gap:8px;margin-bottom:16px;">
-                <p style="margin:0;font-size:14px;"><strong>Tipo:</strong> ${doc.tipo}</p>
-                <p style="margin:0;font-size:14px;"><strong>Cliente:</strong> ${doc.cliente}</p>
-                <p style="margin:0;font-size:14px;"><strong>Valor:</strong> R$ ${doc.valor}</p>
-                <p style="margin:0;font-size:14px;"><strong>Status:</strong> ${status}</p>
-            </div><hr>`;
-            try {
-                const d = JSON.parse(doc.conteudo);
+            let d = {};
+            try { d = JSON.parse(doc.conteudo); } catch {}
+            
+            // doc.data vem do servidor no formato "dd/MM/yyyy HH:mm"
+            const [dataPart, timePart] = (doc.data || '').split(' ');
+            const [dia, mes, ano] = (dataPart || '').split('/');
+            const [hora, min] = (timePart || '00:00').split(':');
+            const dataCriacao = new Date(ano, mes - 1, dia, hora, min);
+            
+            const tipoLabels = {
+                'Orcamento': { label: 'ORÇAMENTO', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', color: '#d97706', bg: '#fffbeb' },
+                'Recibo': { label: 'RECIBO', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', color: '#16a34a', bg: '#f0fdf4' },
+                'Contrato': { label: 'CONTRATO', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', color: '#2563eb', bg: '#eff6ff' }
+            };
+            const t = tipoLabels[doc.tipo] || tipoLabels['Orcamento'];
+            
+let html = `
+                <div style="font-family:'Segoe UI',system-ui,sans-serif;">
+                    <!-- Header do documento -->
+                    <div style="background:${t.bg};border:2px solid ${t.color};border-radius:12px;padding:20px;margin-bottom:20px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:48px;height:48px;background:${t.color};border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="${t.icon}" /><polyline points="14 2 14 8 20 8" /></svg>
+                                </div>
+                                <div>
+                                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:${t.color};">Litoral Polimentos</div>
+                                    <div style="font-size:20px;font-weight:800;color:#0f172a;line-height:1.2;">${t.label}</div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Status</div>
+                                <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${status==='Feito'?'#dcfce7':status==='Pendente'?'#fef3c7':'#fee2e2'};color:${status==='Feito'?'#166534':status==='Pendente'?'#92400e':'#991b1b'}">${status}</span>
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+                            <div>
+                                <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Cliente</div>
+                                <div style="font-size:16px;font-weight:700;color:#0f172a;">${doc.cliente}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Valor</div>
+                                <div style="font-size:22px;font-weight:800;color:${t.color};">R$ ${doc.valor}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Criado em</div>
+                                <div style="font-size:14px;color:#334155;">${dataCriacao.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conteúdo específico por tipo -->
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">`;
+
+            if (doc.tipo === 'Orcamento') {
+                html += `
+                    <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #e2e8f0;">
+                        <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Descrição do Serviço</div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:16px;white-space:pre-wrap;font-size:14px;line-height:1.6;color:#334155;">${d.descricao || '—'}</div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Prazo</div>
+                            <div style="font-size:14px;font-weight:600;color:#0f172a;">${d.prazo || '—'} dias</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Pagamento</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.formaPagamento || '—'}</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Endereço</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.endereco || '—'}</div>
+                        </div>
+                    </div>`;
+            } else if (doc.tipo === 'Recibo') {
+                html += `
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Documento</div>
+                            <div style="font-size:13px;font-weight:600;color:#0f172a;">${d.tipoDocumento === 'cnpj' ? 'CNPJ' : 'CPF'}: ${d.documento || '—'}</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Serviço</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.servico || '—'}</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Pagamento</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.formaPagamento || '—'}</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Endereço</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.endereco || '—'}</div>
+                        </div>
+                    </div>`;
+            } else if (doc.tipo === 'Contrato') {
+                html += `
+                    <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #e2e8f0;">
+                        <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Serviços Contratados</div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:16px;white-space:pre-wrap;font-size:14px;line-height:1.6;color:#334155;">${d.servicos || '—'}</div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Pagamento</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.formaPagamento || '—'}</div>
+                        </div>
+                        <div style="background:#f8fafc;border-radius:8px;padding:12px;">
+                            <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Endereço</div>
+                            <div style="font-size:13px;font-weight:500;color:#334155;word-break:break-word;">${d.endereco || d.cliente || '—'}</div>
+                        </div>
+                    </div>`;
+            } else {
+                // Fallback genérico
                 html += '<table class="table table-sm table-bordered">';
                 for (const [k, v] of Object.entries(d)) {
                     if (v) html += `<tr><th style="width:40%">${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}</th><td>${v}</td></tr>`;
                 }
                 html += '</table>';
-            } catch { html += `<pre class="bg-light p-2 rounded small">${doc.conteudo}</pre>`; }
+            }
+
+            html += `
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;color:#94a3b8;">
+                        <span>Litoral Polimentos — Mármores e Granitos</span>
+                        <span>ID: ${doc.id}</span>
+                    </div>
+                </div>`;
+
             document.getElementById('modalConteudo').innerHTML = html;
             new bootstrap.Modal(document.getElementById('modalDocumento')).show();
         }

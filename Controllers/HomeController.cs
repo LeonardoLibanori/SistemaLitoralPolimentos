@@ -291,6 +291,14 @@ namespace SistemaLitoralPolimentos.Controllers
         [HttpPost]
         [IgnoreAntiforgeryToken]
         public IActionResult LimparHistorico() => Ok();
+
+        [HttpGet]
+        public IActionResult ObterConfigEmpresa()
+        {
+            var cfg = _config.GetSection("Empresa").Get<EmpresaConfig>();
+            if (cfg == null) return NotFound();
+            return Ok(cfg);
+        }
     }
 
     public class SalvarDocumentoRequest
